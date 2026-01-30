@@ -1,0 +1,168 @@
+import { Player, GolfRound, GolfCourse } from '@/types/golf';
+
+export const currentPlayer: Player = {
+  id: 'current-user',
+  name: 'Alex Thompson',
+  handicap: 14,
+  homeClub: 'Pebble Beach Golf Links',
+  bio: 'Weekend warrior who loves a good round with friends. Always up for trying new courses!',
+  avatarUrl: undefined,
+  joinedDate: '2023-06-15',
+  roundsPlayed: 47,
+};
+
+export const mockPlayers: Player[] = [
+  {
+    id: '1',
+    name: 'Sarah Mitchell',
+    handicap: 8,
+    homeClub: 'Augusta National',
+    bio: 'Former college golfer, now playing for fun.',
+    joinedDate: '2022-03-10',
+    roundsPlayed: 124,
+  },
+  {
+    id: '2',
+    name: 'James Chen',
+    handicap: 18,
+    homeClub: 'St Andrews Links',
+    bio: 'Love the social aspect of golf. Happy to play any format!',
+    joinedDate: '2023-01-20',
+    roundsPlayed: 35,
+  },
+  {
+    id: '3',
+    name: 'Emily Rodriguez',
+    handicap: 12,
+    homeClub: 'TPC Sawgrass',
+    bio: 'Golf addict and coffee enthusiast.',
+    joinedDate: '2022-08-05',
+    roundsPlayed: 89,
+  },
+  {
+    id: '4',
+    name: 'Michael Brooks',
+    handicap: 22,
+    homeClub: 'Pinehurst Resort',
+    bio: 'New to golf but loving every minute!',
+    joinedDate: '2024-02-01',
+    roundsPlayed: 12,
+  },
+  {
+    id: '5',
+    name: 'Lisa Park',
+    handicap: 5,
+    homeClub: 'Torrey Pines',
+    bio: 'Competitive player looking for good matches.',
+    joinedDate: '2021-11-15',
+    roundsPlayed: 203,
+  },
+];
+
+export const mockCourses: GolfCourse[] = [
+  { id: '1', name: 'Pebble Beach Golf Links', location: 'Pebble Beach, CA', holes: 18, par: 72 },
+  { id: '2', name: 'TPC Scottsdale', location: 'Scottsdale, AZ', holes: 18, par: 71 },
+  { id: '3', name: 'Bandon Dunes', location: 'Bandon, OR', holes: 18, par: 72 },
+  { id: '4', name: 'Whistling Straits', location: 'Kohler, WI', holes: 18, par: 72 },
+  { id: '5', name: 'Bethpage Black', location: 'Farmingdale, NY', holes: 18, par: 71 },
+  { id: '6', name: 'Kiawah Island Ocean', location: 'Kiawah Island, SC', holes: 18, par: 72 },
+  { id: '7', name: 'Spanish Bay', location: 'Pebble Beach, CA', holes: 18, par: 72 },
+  { id: '8', name: 'Chambers Bay', location: 'University Place, WA', holes: 18, par: 72 },
+];
+
+export const mockRounds: GolfRound[] = [
+  {
+    id: '1',
+    date: '2026-02-01',
+    time: '08:30',
+    course: 'Pebble Beach Golf Links',
+    courseLocation: 'Pebble Beach, CA',
+    format: 'Stroke Play',
+    playersNeeded: 4,
+    currentPlayers: [mockPlayers[0], mockPlayers[2]],
+    handicapRange: '0-10',
+    organizer: mockPlayers[0],
+    description: 'Morning round with ocean views. Looking for steady players who keep a good pace.',
+    status: 'open',
+  },
+  {
+    id: '2',
+    date: '2026-02-02',
+    time: '10:00',
+    course: 'TPC Scottsdale',
+    courseLocation: 'Scottsdale, AZ',
+    format: 'Stableford',
+    playersNeeded: 4,
+    currentPlayers: [mockPlayers[1]],
+    handicapRange: 'All Levels',
+    organizer: mockPlayers[1],
+    description: 'Casual Sunday round. All skill levels welcome!',
+    status: 'open',
+  },
+  {
+    id: '3',
+    date: '2026-02-03',
+    time: '07:00',
+    course: 'Bandon Dunes',
+    courseLocation: 'Bandon, OR',
+    format: 'Match Play',
+    playersNeeded: 4,
+    currentPlayers: [mockPlayers[4], mockPlayers[0], mockPlayers[2], mockPlayers[3]],
+    handicapRange: '0-10',
+    organizer: mockPlayers[4],
+    description: 'Competitive match play. Looking for serious golfers.',
+    status: 'full',
+  },
+  {
+    id: '4',
+    date: '2026-02-05',
+    time: '14:00',
+    course: 'Bethpage Black',
+    courseLocation: 'Farmingdale, NY',
+    format: 'Best Ball',
+    playersNeeded: 4,
+    currentPlayers: [mockPlayers[3], mockPlayers[1]],
+    handicapRange: '20-30',
+    organizer: mockPlayers[3],
+    description: 'Afternoon best ball. Perfect for mid-handicappers looking to have fun.',
+    status: 'open',
+  },
+  {
+    id: '5',
+    date: '2026-02-08',
+    time: '09:00',
+    course: 'Kiawah Island Ocean',
+    courseLocation: 'Kiawah Island, SC',
+    format: 'Scramble',
+    playersNeeded: 4,
+    currentPlayers: [mockPlayers[2]],
+    handicapRange: 'All Levels',
+    organizer: mockPlayers[2],
+    description: 'Team scramble - great for beginners and experienced players alike!',
+    status: 'open',
+  },
+];
+
+export const gameFormats = [
+  'Stroke Play',
+  'Stableford', 
+  'Match Play',
+  'Best Ball',
+  'Scramble',
+  'Skins',
+] as const;
+
+export const handicapRanges = [
+  'All Levels',
+  '0-10',
+  '10-20', 
+  '20-30',
+  '30+',
+] as const;
+
+export const timeSlots = [
+  '06:00', '06:30', '07:00', '07:30', '08:00', '08:30',
+  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+  '15:00', '15:30', '16:00', '16:30', '17:00',
+];
