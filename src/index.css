@@ -2,87 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Golf Social App Design System
+   A fresh, welcoming aesthetic for connecting golfers
+   Inspired by modern sports apps with warm, inclusive tones
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Golf Green Palette */
+    --background: 45 30% 97%;
+    --foreground: 150 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 150 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 150 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Rich Golf Green */
+    --primary: 152 45% 32%;
+    --primary-foreground: 45 30% 97%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary: Warm Cream */
+    --secondary: 45 40% 94%;
+    --secondary-foreground: 150 25% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted: Soft Gray-Green */
+    --muted: 150 10% 92%;
+    --muted-foreground: 150 10% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent: Golden for CTAs */
+    --accent: 38 75% 55%;
+    --accent-foreground: 38 75% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 152 45% 32%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
+    /* Custom Golf Tokens */
+    --golf-green-50: 152 40% 96%;
+    --golf-green-100: 152 38% 90%;
+    --golf-green-200: 152 35% 80%;
+    --golf-green-300: 152 35% 65%;
+    --golf-green-400: 152 40% 45%;
+    --golf-green-500: 152 45% 32%;
+    --golf-green-600: 152 50% 25%;
+    --golf-green-700: 152 55% 18%;
+
+    --gold-400: 38 75% 55%;
+    --gold-500: 38 80% 48%;
+    --gold-600: 38 85% 40%;
+
+    --cream-50: 45 50% 98%;
+    --cream-100: 45 40% 95%;
+    --cream-200: 45 35% 90%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(150 25% 15% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(150 25% 15% / 0.08), 0 2px 4px -2px hsl(150 25% 15% / 0.05);
+    --shadow-lg: 0 10px 15px -3px hsl(150 25% 15% / 0.1), 0 4px 6px -4px hsl(150 25% 15% / 0.05);
+    --shadow-card: 0 2px 8px -2px hsl(150 25% 15% / 0.08), 0 4px 16px -4px hsl(150 25% 15% / 0.06);
+
+    /* Sidebar (keeping for compatibility) */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 150 30% 8%;
+    --foreground: 45 30% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 150 25% 12%;
+    --card-foreground: 45 30% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 150 25% 12%;
+    --popover-foreground: 45 30% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 152 50% 45%;
+    --primary-foreground: 150 30% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 150 20% 18%;
+    --secondary-foreground: 45 30% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 150 20% 18%;
+    --muted-foreground: 150 10% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 38 70% 50%;
+    --accent-foreground: 38 70% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 150 20% 22%;
+    --input: 150 20% 22%;
+    --ring: 152 50% 45%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +127,149 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  /* Mobile Container */
+  .mobile-container {
+    @apply max-w-md mx-auto min-h-screen bg-background relative;
+  }
+
+  /* Screen with bottom nav padding */
+  .screen-content {
+    @apply pb-24 px-4 pt-4;
+  }
+
+  /* Golf Card Styling */
+  .golf-card {
+    @apply bg-card rounded-2xl p-4 border border-border;
+    box-shadow: var(--shadow-card);
+  }
+
+  .golf-card-hover {
+    @apply golf-card transition-all duration-200 hover:scale-[1.02];
+    box-shadow: var(--shadow-card);
+  }
+
+  .golf-card-hover:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Badge Styles */
+  .golf-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .golf-badge-primary {
+    @apply golf-badge bg-primary/10 text-primary;
+  }
+
+  .golf-badge-accent {
+    @apply golf-badge bg-accent/15 text-accent-foreground;
+  }
+
+  .golf-badge-muted {
+    @apply golf-badge bg-muted text-muted-foreground;
+  }
+
+  /* Button Variants */
+  .btn-golf-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98];
+  }
+
+  .btn-golf-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98];
+  }
+
+  .btn-golf-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 px-6 rounded-xl transition-all duration-200;
+  }
+
+  .btn-golf-ghost {
+    @apply text-primary hover:bg-primary/10 font-medium py-2 px-4 rounded-lg transition-all duration-200;
+  }
+
+  /* Input Styling */
+  .golf-input {
+    @apply w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200;
+  }
+
+  /* Avatar Ring */
+  .avatar-ring {
+    @apply ring-2 ring-primary/20 ring-offset-2 ring-offset-background;
+  }
+
+  /* Section Header */
+  .section-header {
+    @apply text-lg font-semibold text-foreground mb-3;
+  }
+
+  /* Subtle divider */
+  .golf-divider {
+    @apply h-px bg-border my-4;
+  }
+
+  /* Floating action button */
+  .fab {
+    @apply fixed bottom-24 right-4 w-14 h-14 bg-accent text-accent-foreground rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:shadow-xl hover:scale-105 active:scale-95 z-40;
+  }
+
+  /* Player count pill */
+  .player-count {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 bg-golf-green-50 text-golf-green-600 rounded-full text-sm font-medium;
+  }
+
+  /* Status indicators */
+  .status-open {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium;
+  }
+
+  .status-full {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  /* Smooth scrolling container */
+  .scroll-smooth-y {
+    @apply overflow-y-auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Text gradient */
+  .text-gradient-golf {
+    @apply bg-gradient-to-r from-primary to-golf-green-400 bg-clip-text text-transparent;
+  }
+
+  /* Background gradient */
+  .bg-gradient-golf {
+    @apply bg-gradient-to-br from-primary via-golf-green-500 to-golf-green-600;
+  }
+
+  .bg-gradient-gold {
+    @apply bg-gradient-to-r from-gold-400 to-gold-500;
+  }
+
+  /* Glassmorphism effect */
+  .glass {
+    @apply bg-card/80 backdrop-blur-md;
   }
 }
