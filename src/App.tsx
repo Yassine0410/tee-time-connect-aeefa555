@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import CreateRound from "./pages/CreateRound";
 import RoundDetails from "./pages/RoundDetails";
 import MyRounds from "./pages/MyRounds";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/create" element={<CreateRound />} />
             <Route path="/round/:id" element={<RoundDetails />} />
             <Route path="/rounds" element={<MyRounds />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
