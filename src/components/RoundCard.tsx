@@ -1,18 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Users, Flag } from 'lucide-react';
-import { GolfRound } from '@/types/golf';
 import { PlayerAvatarStack } from './PlayerAvatar';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
+import { RoundWithDetails } from '@/hooks/useGolfData';
 
 interface RoundCardProps {
-  round: GolfRound;
+  round: RoundWithDetails;
 }
 
 export function RoundCard({ round }: RoundCardProps) {
   const navigate = useNavigate();
-  const spotsLeft = round.playersNeeded - round.currentPlayers.length;
-  const isFull = spotsLeft === 0;
+  const spotsLeft = round.players_needed - round.players.length;
+  const isFull = spotsLeft <= 0;
   
   const formattedDate = format(parseISO(round.date), 'EEE, MMM d');
 
@@ -25,11 +25,11 @@ export function RoundCard({ round }: RoundCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-foreground text-base leading-tight mb-1">
-            {round.course}
+            {round.course.name}
           </h3>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             <MapPin size={14} className="shrink-0" />
-            {round.courseLocation}
+            {round.course.location}
           </p>
         </div>
         <div className={cn(
@@ -59,14 +59,17 @@ export function RoundCard({ round }: RoundCardProps) {
       {/* Players & Handicap Row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <PlayerAvatarStack players={round.currentPlayers} size="sm" />
+          <PlayerAvatarStack 
+            players={round.players.map(p => ({ name: p.name, avatarUrl: p.avatar_url || undefined }))} 
+            size="sm" 
+          />
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Users size={14} />
-            <span>{round.currentPlayers.length}/{round.playersNeeded}</span>
+            <span>{round.players.length}/{round.players_needed}</span>
           </div>
         </div>
         <div className="golf-badge-muted">
-          HCP {round.handicapRange}
+          HCP {round.handicap_range}
         </div>
       </div>
 

@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { Search, Filter, Bell } from 'lucide-react';
 import { RoundCard } from '@/components/RoundCard';
 import { Header } from '@/components/Header';
-import { mockRounds } from '@/data/mockData';
+import { useRounds } from '@/hooks/useGolfData';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showOpenOnly, setShowOpenOnly] = useState(false);
+  const { data: rounds = [], isLoading } = useRounds();
 
-  const filteredRounds = mockRounds.filter((round) => {
+  const filteredRounds = rounds.filter((round) => {
     const matchesSearch = 
-      round.course.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      round.courseLocation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      round.course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      round.course.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       round.format.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesFilter = !showOpenOnly || round.status === 'open';
@@ -21,7 +22,6 @@ export default function Home() {
 
   return (
     <div className="screen-content">
-      {/* Header */}
       <Header 
         title="Find Your Round"
         subtitle="Connect with golfers near you"
@@ -60,28 +60,27 @@ export default function Home() {
       {/* Quick Stats */}
       <div className="flex gap-3 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4">
         <div className="flex-shrink-0 bg-gradient-golf text-primary-foreground rounded-2xl p-4 min-w-[140px]">
-          <p className="text-3xl font-bold">{mockRounds.filter(r => r.status === 'open').length}</p>
+          <p className="text-3xl font-bold">{rounds.filter(r => r.status === 'open').length}</p>
           <p className="text-sm opacity-90">Open Rounds</p>
         </div>
         <div className="flex-shrink-0 golf-card min-w-[140px]">
-          <p className="text-3xl font-bold text-foreground">{mockRounds.length}</p>
+          <p className="text-3xl font-bold text-foreground">{rounds.length}</p>
           <p className="text-sm text-muted-foreground">This Week</p>
-        </div>
-        <div className="flex-shrink-0 golf-card min-w-[140px]">
-          <p className="text-3xl font-bold text-foreground">47</p>
-          <p className="text-sm text-muted-foreground">Active Golfers</p>
         </div>
       </div>
 
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="section-header mb-0">Upcoming Rounds</h2>
-        <button className="text-sm font-medium text-primary">See all</button>
       </div>
 
       {/* Rounds List */}
       <div className="space-y-4">
-        {filteredRounds.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          </div>
+        ) : filteredRounds.length > 0 ? (
           filteredRounds.map((round) => (
             <RoundCard key={round.id} round={round} />
           ))
@@ -91,7 +90,7 @@ export default function Home() {
               <Search size={24} className="text-muted-foreground" />
             </div>
             <p className="text-foreground font-medium">No rounds found</p>
-            <p className="text-sm text-muted-foreground mt-1">Try adjusting your search</p>
+            <p className="text-sm text-muted-foreground mt-1">Try adjusting your search or create a new round!</p>
           </div>
         )}
       </div>

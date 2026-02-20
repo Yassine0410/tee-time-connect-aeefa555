@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      golf_courses: {
+        Row: {
+          created_at: string
+          holes: number
+          id: string
+          location: string
+          name: string
+          par: number
+        }
+        Insert: {
+          created_at?: string
+          holes?: number
+          id?: string
+          location: string
+          name: string
+          par?: number
+        }
+        Update: {
+          created_at?: string
+          holes?: number
+          id?: string
+          location?: string
+          name?: string
+          par?: number
+        }
+        Relationships: []
+      }
+      golf_rounds: {
+        Row: {
+          course_id: string
+          created_at: string
+          date: string
+          description: string | null
+          format: string
+          handicap_range: string
+          id: string
+          organizer_id: string
+          players_needed: number
+          status: string
+          time: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          date: string
+          description?: string | null
+          format?: string
+          handicap_range?: string
+          id?: string
+          organizer_id: string
+          players_needed?: number
+          status?: string
+          time: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          format?: string
+          handicap_range?: string
+          id?: string
+          organizer_id?: string
+          players_needed?: number
+          status?: string
+          time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "golf_rounds_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "golf_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "golf_rounds_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -49,6 +136,42 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      round_players: {
+        Row: {
+          id: string
+          joined_at: string
+          profile_id: string
+          round_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          profile_id: string
+          round_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          profile_id?: string
+          round_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_players_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round_players_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "golf_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

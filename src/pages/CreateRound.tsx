@@ -6,12 +6,24 @@ import { Header } from '@/components/Header';
 import { FormField, SelectCards } from '@/components/FormField';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { mockCourses, gameFormats, handicapRanges, timeSlots } from '@/data/mockData';
+import { useCourses, useCreateRound } from '@/hooks/useGolfData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+const gameFormats = ['Stroke Play', 'Stableford', 'Match Play', 'Best Ball', 'Scramble', 'Skins'];
+const handicapRanges = ['All Levels', '0-10', '10-20', '20-30', '30+'];
+const timeSlots = [
+  '06:00', '06:30', '07:00', '07:30', '08:00', '08:30',
+  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+  '15:00', '15:30', '16:00', '16:30', '17:00',
+];
+
 export default function CreateRound() {
   const navigate = useNavigate();
+  const { data: courses = [] } = useCourses();
+  const createRound = useCreateRound();
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState('');
   const [courseId, setCourseId] = useState('');
@@ -20,9 +32,9 @@ export default function CreateRound() {
   const [handicapRange, setHandicapRange] = useState('');
   const [description, setDescription] = useState('');
 
-  const selectedCourse = mockCourses.find(c => c.id === courseId);
+  const selectedCourse = courses.find(c => c.id === courseId);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!date || !time || !courseId || !gameFormat || !handicapRange) {
@@ -30,10 +42,23 @@ export default function CreateRound() {
       return;
     }
 
-    toast.success('Round created successfully!', {
-      description: 'Other golfers can now join your round.',
-    });
-    navigate('/');
+    try {
+      await createRound.mutateAsync({
+        course_id: courseId,
+        date: format(date, 'yyyy-MM-dd'),
+        time,
+        format: gameFormat,
+        players_needed: parseInt(playersNeeded),
+        handicap_range: handicapRange,
+        description: description || undefined,
+      });
+      toast.success('Round created successfully!', {
+        description: 'Other golfers can now join your round.',
+      });
+      navigate('/');
+    } catch (err: any) {
+      toast.error('Failed to create round', { description: err.message });
+    }
   };
 
   return (
@@ -100,7 +125,7 @@ export default function CreateRound() {
               className="golf-input pl-10 appearance-none cursor-pointer"
             >
               <option value="">Select a course</option>
-              {mockCourses.map((course) => (
+              {courses.map((course) => (
                 <option key={course.id} value={course.id}>
                   {course.name} - {course.location}
                 </option>
@@ -170,10 +195,11 @@ export default function CreateRound() {
         {/* Submit Button */}
         <button 
           type="submit"
-          className="btn-golf-accent w-full text-lg"
+          disabled={createRound.isPending}
+          className="btn-golf-accent w-full text-lg disabled:opacity-50"
         >
           <Flag size={20} className="inline mr-2" />
-          Publish Round
+          {createRound.isPending ? 'Creating...' : 'Publish Round'}
         </button>
       </form>
     </div>

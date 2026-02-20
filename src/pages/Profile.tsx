@@ -1,19 +1,33 @@
 import { Settings, Trophy, Calendar, TrendingUp, ChevronRight } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
-import { currentPlayer } from '@/data/mockData';
+import { useProfile } from '@/hooks/useGolfData';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Profile() {
+  const { data: profile, isLoading } = useProfile();
+  const { signOut } = useAuth();
+
+  if (isLoading || !profile) {
+    return (
+      <div className="screen-content">
+        <Header title="Profile" />
+        <div className="flex justify-center py-12">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   const stats = [
-    { icon: Calendar, label: 'Rounds Played', value: currentPlayer.roundsPlayed },
-    { icon: Trophy, label: 'Best Score', value: '78' },
-    { icon: TrendingUp, label: 'Avg Score', value: '86' },
+    { icon: Calendar, label: 'Handicap', value: profile.handicap },
+    { icon: Trophy, label: 'Club', value: profile.home_club || '—' },
+    { icon: TrendingUp, label: 'Member since', value: new Date(profile.created_at).getFullYear() },
   ];
 
   const menuItems = [
     { label: 'Edit Profile', path: '/profile/edit' },
     { label: 'My Statistics', path: '/profile/stats' },
-    { label: 'Handicap History', path: '/profile/handicap' },
     { label: 'Notifications', path: '/profile/notifications' },
     { label: 'Settings', path: '/profile/settings' },
     { label: 'Help & Support', path: '/help' },
@@ -34,66 +48,27 @@ export default function Profile() {
       <div className="golf-card mb-6 animate-fade-in">
         <div className="flex items-center gap-4 mb-4">
           <PlayerAvatar 
-            name={currentPlayer.name} 
+            name={profile.name || 'User'} 
+            avatarUrl={profile.avatar_url || undefined}
             size="xl" 
             showRing 
           />
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-foreground">{currentPlayer.name}</h2>
-            <p className="text-muted-foreground text-sm">{currentPlayer.homeClub}</p>
+            <h2 className="text-xl font-bold text-foreground">{profile.name || 'New Golfer'}</h2>
+            <p className="text-muted-foreground text-sm">{profile.home_club || 'No home club set'}</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="golf-badge-primary font-bold">
-                HCP {currentPlayer.handicap}
-              </span>
+              <span className="golf-badge-primary font-bold">HCP {profile.handicap}</span>
               <span className="text-xs text-muted-foreground">
-                Member since {new Date(currentPlayer.joinedDate).getFullYear()}
+                Member since {new Date(profile.created_at).getFullYear()}
               </span>
             </div>
           </div>
         </div>
-        {currentPlayer.bio && (
+        {profile.bio && (
           <p className="text-sm text-muted-foreground border-t border-border pt-4">
-            {currentPlayer.bio}
+            {profile.bio}
           </p>
         )}
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        {stats.map((stat) => (
-          <div 
-            key={stat.label}
-            className="golf-card text-center animate-fade-in"
-          >
-            <stat.icon size={20} className="mx-auto mb-2 text-primary" />
-            <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Handicap Trend Card */}
-      <div className="golf-card mb-6 animate-fade-in">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-foreground">Handicap Trend</h3>
-          <span className="text-xs text-muted-foreground">Last 6 months</span>
-        </div>
-        <div className="flex items-end gap-2 h-16 mb-2">
-          {[18, 17, 16, 15, 14, 14].map((hcp, i) => (
-            <div 
-              key={i}
-              className="flex-1 bg-gradient-golf rounded-t-sm transition-all duration-300"
-              style={{ height: `${(20 - hcp) * 6 + 20}%` }}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Aug</span>
-          <span>Jan</span>
-        </div>
-        <p className="text-center text-sm text-primary font-medium mt-3">
-          📉 Down 4 strokes! Keep it up!
-        </p>
       </div>
 
       {/* Menu Items */}
@@ -112,7 +87,10 @@ export default function Profile() {
       </div>
 
       {/* Sign Out */}
-      <button className="w-full mt-6 py-3 text-center text-destructive font-medium hover:bg-destructive/10 rounded-xl transition-colors">
+      <button 
+        onClick={signOut}
+        className="w-full mt-6 py-3 text-center text-destructive font-medium hover:bg-destructive/10 rounded-xl transition-colors"
+      >
         Sign Out
       </button>
     </div>
