@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Users, Flag, Share2, MessageCircle, UserPlus, UserMinus } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Flag, Share2, MessageCircle, UserPlus, UserMinus, MessagesSquare } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
 import { useRound, useProfile, useJoinRound, useLeaveRound } from '@/hooks/useGolfData';
+import { useGetOrCreateDM, useRoundConversation } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -14,6 +15,8 @@ export default function RoundDetails() {
   const { data: profile } = useProfile();
   const joinRound = useJoinRound();
   const leaveRound = useLeaveRound();
+  const getOrCreateDM = useGetOrCreateDM();
+  const { data: roundConversationId } = useRoundConversation(id);
 
   if (isLoading) {
     return (
@@ -61,6 +64,22 @@ export default function RoundDetails() {
 
   const handleShare = () => {
     toast.success('Link copied to clipboard!');
+  };
+
+  const handleMessageOrganizer = async () => {
+    if (!round || isOrganizer) return;
+    try {
+      const convId = await getOrCreateDM.mutateAsync(round.organizer.id);
+      navigate(`/chat/${convId}`);
+    } catch (err: any) {
+      toast.error('Failed to open chat', { description: err.message });
+    }
+  };
+
+  const handleRoundChat = () => {
+    if (roundConversationId) {
+      navigate(`/chat/${roundConversationId}`);
+    }
   };
 
   return (
@@ -223,10 +242,23 @@ export default function RoundDetails() {
           </button>
         )}
         
-        <button className="btn-golf-outline w-full">
-          <MessageCircle size={18} className="inline mr-2" />
-          Message Organizer
-        </button>
+        {!isOrganizer && (
+          <button
+            onClick={handleMessageOrganizer}
+            disabled={getOrCreateDM.isPending}
+            className="btn-golf-outline w-full"
+          >
+            <MessageCircle size={18} className="inline mr-2" />
+            Message Organizer
+          </button>
+        )}
+
+        {hasJoined && roundConversationId && (
+          <button onClick={handleRoundChat} className="btn-golf-outline w-full">
+            <MessagesSquare size={18} className="inline mr-2" />
+            Round Group Chat
+          </button>
+        )}
       </div>
     </div>
   );
