@@ -1,4 +1,5 @@
 import { Settings, Trophy, Calendar, TrendingUp, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
 import { useProfile } from '@/hooks/useGolfData';
@@ -7,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Profile() {
   const { data: profile, isLoading } = useProfile();
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   if (isLoading || !profile) {
     return (
@@ -76,6 +78,7 @@ export default function Profile() {
         {menuItems.map((item, index) => (
           <button
             key={item.path}
+            onClick={() => navigate(item.path)}
             className={`w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-muted/50 transition-colors ${
               index !== menuItems.length - 1 ? 'border-b border-border' : ''
             }`}

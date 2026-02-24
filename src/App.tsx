@@ -13,6 +13,7 @@ import MyRounds from "./pages/MyRounds";
 import Leaderboard from "./pages/Leaderboard";
 import Messages from "./pages/Messages";
 import Chat from "./pages/Chat";
+import EditProfile from "./pages/EditProfile";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,7 @@ function ProtectedRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/create" element={<CreateRound />} />
         <Route path="/round/:id" element={<RoundDetails />} />
         <Route path="/rounds" element={<MyRounds />} />
