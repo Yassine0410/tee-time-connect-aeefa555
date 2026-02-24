@@ -1,8 +1,8 @@
-import { Settings, Trophy, Calendar, TrendingUp, ChevronRight } from 'lucide-react';
+import { Settings, Trophy, Calendar, TrendingUp, ChevronRight, BarChart3, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
-import { useProfile } from '@/hooks/useGolfData';
+import { useProfile, useMyRounds } from '@/hooks/useGolfData';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Profile() {
@@ -28,11 +28,9 @@ export default function Profile() {
   ];
 
   const menuItems = [
-    { label: 'Edit Profile', path: '/profile/edit' },
-    { label: 'My Statistics', path: '/profile/stats' },
-    { label: 'Notifications', path: '/profile/notifications' },
-    { label: 'Settings', path: '/profile/settings' },
-    { label: 'Help & Support', path: '/help' },
+    { label: 'Modifier le profil', path: '/profile/edit', icon: Settings },
+    { label: 'Classement', path: '/leaderboard', icon: Trophy },
+    { label: 'Mes rondes', path: '/rounds', icon: Calendar },
   ];
 
   return (
@@ -75,18 +73,22 @@ export default function Profile() {
 
       {/* Menu Items */}
       <div className="golf-card p-0 overflow-hidden animate-fade-in">
-        {menuItems.map((item, index) => (
-          <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className={`w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-muted/50 transition-colors ${
-              index !== menuItems.length - 1 ? 'border-b border-border' : ''
-            }`}
-          >
-            <span className="font-medium text-foreground">{item.label}</span>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </button>
-        ))}
+        {menuItems.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-muted/50 transition-colors ${
+                index !== menuItems.length - 1 ? 'border-b border-border' : ''
+              }`}
+            >
+              <Icon size={18} className="text-muted-foreground" />
+              <span className="font-medium text-foreground flex-1">{item.label}</span>
+              <ChevronRight size={18} className="text-muted-foreground" />
+            </button>
+          );
+        })}
       </div>
 
       {/* Sign Out */}
