@@ -226,16 +226,25 @@ export function useMessages(conversationId: string | undefined) {
 // Send a message
 export function useSendMessage() {
   const queryClient = useQueryClient();
-  const { data: profile } = useProfile();
 
   return useMutation({
     mutationFn: async ({ conversationId, content }: { conversationId: string; content: string }) => {
-      if (!profile) throw new Error('Not authenticated');
+      // Get current user's profile at call time
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      if (profileError) throw profileError;
+
       const { error } = await supabase
         .from('messages')
         .insert({
           conversation_id: conversationId,
-          sender_id: profile.id,
+          sender_id: profileData.id,
           content,
         });
       if (error) throw error;

@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Chat() {
   const { id: conversationId } = useParams();
@@ -17,6 +18,7 @@ export default function Chat() {
   const { data: profile } = useProfile();
   const [text, setText] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   // Get conversation details for header
   const { data: convDetails } = useQuery({
@@ -65,7 +67,11 @@ export default function Chat() {
     if (!text.trim() || !conversationId) return;
     const content = text.trim();
     setText('');
-    await sendMessage.mutateAsync({ conversationId, content });
+    try {
+      await sendMessage.mutateAsync({ conversationId, content });
+    } catch (err: any) {
+      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+    }
   };
 
   return (
