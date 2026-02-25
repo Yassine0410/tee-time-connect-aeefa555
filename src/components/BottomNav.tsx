@@ -14,6 +14,9 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Hide bottom nav on chat detail pages
+  if (location.pathname.startsWith('/chat/')) return null;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50">
       <div className="max-w-md mx-auto">
