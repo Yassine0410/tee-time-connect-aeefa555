@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Users, Flag, Share2, MessageCircle, UserPlus, UserMinus, MessagesSquare } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Flag, Share2, MessageCircle, UserPlus, UserMinus, MessagesSquare, AlertTriangle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
@@ -8,6 +9,16 @@ import { useGetOrCreateDM, useRoundConversation } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function RoundDetails() {
   const { id } = useParams();
@@ -19,6 +30,7 @@ export default function RoundDetails() {
   const getOrCreateDM = useGetOrCreateDM();
   const { data: roundConversationId } = useRoundConversation(id);
   const { t, dateLocale, formatLabel, handicapLabel } = useLanguage();
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
 
   if (isLoading) {
     return (
@@ -51,17 +63,35 @@ export default function RoundDetails() {
   const formattedDate = format(parseISO(round.date), 'EEEE, MMMM d, yyyy', { locale: dateLocale });
   const isOrganizer = profile ? round.organizer.id === profile.id : false;
 
-  const handleJoinLeave = async () => {
+  const otherPlayers = profile ? round.players.filter(p => p.id !== profile.id) : [];
+
+  const handleJoin = async () => {
     if (!id) return;
     try {
-      if (hasJoined) {
-        await leaveRound.mutateAsync(id);
-        toast.success(t('roundDetails.leftRound'));
+      await joinRound.mutateAsync(id);
+      toast.success(t('roundDetails.joinedRound'), {
+        description: t('roundDetails.joinedRoundDesc', { course: round.course.name }),
+      });
+    } catch (err: any) {
+      toast.error(t('roundDetails.actionFailed'), { description: err.message });
+    }
+  };
+
+  const handleLeaveConfirmed = async () => {
+    if (!id) return;
+    try {
+      const result = await leaveRound.mutateAsync({
+        roundId: id,
+        isOrganizer,
+        otherPlayers,
+      });
+      if (result === 'deleted') {
+        toast.success(t('roundDetails.roundDeleted'));
+        navigate('/');
+      } else if (isOrganizer) {
+        toast.success(t('roundDetails.hostTransferred'));
       } else {
-        await joinRound.mutateAsync(id);
-        toast.success(t('roundDetails.joinedRound'), {
-          description: t('roundDetails.joinedRoundDesc', { course: round.course.name }),
-        });
+        toast.success(t('roundDetails.leftRound'));
       }
     } catch (err: any) {
       toast.error(t('roundDetails.actionFailed'), { description: err.message });
@@ -229,18 +259,14 @@ export default function RoundDetails() {
       </div>
 
       <div className="space-y-3">
-        {!isOrganizer && (
+        {/* Join button for non-hosts who haven't joined */}
+        {!isOrganizer && !hasJoined && (
           <button
-            onClick={handleJoinLeave}
-            disabled={joinRound.isPending || leaveRound.isPending || (isFull && !hasJoined)}
-            className={cn('w-full text-lg transition-all duration-200 disabled:opacity-50', hasJoined ? 'btn-golf-outline' : 'btn-golf-accent')}
+            onClick={handleJoin}
+            disabled={joinRound.isPending || isFull}
+            className={cn('w-full text-lg transition-all duration-200 disabled:opacity-50', 'btn-golf-accent')}
           >
-            {hasJoined ? (
-              <>
-                <UserMinus size={20} className="inline mr-2" />
-                {t('roundDetails.leaveRound')}
-              </>
-            ) : isFull ? (
+            {isFull ? (
               t('roundDetails.roundIsFull')
             ) : (
               <>
@@ -248,6 +274,18 @@ export default function RoundDetails() {
                 {t('roundDetails.joinRound')}
               </>
             )}
+          </button>
+        )}
+
+        {/* Leave button for anyone who has joined (including host) */}
+        {hasJoined && (
+          <button
+            onClick={() => setShowLeaveDialog(true)}
+            disabled={leaveRound.isPending}
+            className="btn-golf-outline w-full text-lg transition-all duration-200 disabled:opacity-50"
+          >
+            <UserMinus size={20} className="inline mr-2" />
+            {t('roundDetails.leaveRound')}
           </button>
         )}
 
@@ -265,6 +303,36 @@ export default function RoundDetails() {
           </button>
         )}
       </div>
+
+      {/* Leave confirmation dialog */}
+      <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle size={20} className="text-destructive" />
+              {t('roundDetails.leaveConfirmTitle')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {isOrganizer && otherPlayers.length === 0
+                ? t('roundDetails.leaveConfirmHost_noPlayers')
+                : isOrganizer
+                ? t('roundDetails.leaveConfirmHost_withPlayers')
+                : t('roundDetails.leaveConfirmPlayer')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('roundDetails.leaveConfirmCancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLeaveConfirmed}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isOrganizer && otherPlayers.length === 0
+                ? t('roundDetails.leaveConfirmDeleteAction')
+                : t('roundDetails.leaveConfirmAction')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
