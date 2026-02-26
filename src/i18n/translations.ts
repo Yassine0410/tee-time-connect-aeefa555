@@ -48,7 +48,6 @@ const enTranslations = {
   "profile.signOut": "Sign Out",
 
   "createRound.title": "Create a Round",
-  "createRound.subtitle": "Invite golfers to join you",
   "createRound.date": "Date",
   "createRound.selectDate": "Select a date",
   "createRound.teeTime": "Tee Time",
@@ -271,7 +270,6 @@ const frTranslations: Record<TranslationKey, string> = {
   "profile.signOut": "Se deconnecter",
 
   "createRound.title": "Creer une partie",
-  "createRound.subtitle": "Invite des golfeurs a te rejoindre",
   "createRound.date": "Date",
   "createRound.selectDate": "Choisir une date",
   "createRound.teeTime": "Heure de depart",

@@ -86,7 +86,7 @@ export default function CreateRound() {
 
   return (
     <div className="screen-content">
-      <Header title={t('createRound.title')} subtitle={t('createRound.subtitle')} showBack />
+      <Header title={t('createRound.title')} showBack />
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormField label={t('createRound.date')} required>
