@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Bell } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { RoundCard } from '@/components/RoundCard';
 import { Header } from '@/components/Header';
 import { useRounds } from '@/hooks/useGolfData';
@@ -30,12 +30,6 @@ export default function Home() {
       <Header 
         title={t('home.title')}
         subtitle={t('home.subtitle')}
-        action={
-          <button className="p-2 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors relative">
-            <Bell size={22} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full" />
-          </button>
-        }
       />
 
       {/* Search & Filter */}
