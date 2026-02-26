@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { Search, Filter, Circle } from 'lucide-react';
 import { RoundCard } from '@/components/RoundCard';
-import { useProfile, useRounds } from '@/hooks/useGolfData';
+import { RoundWithDetails, useProfile, useRounds } from '@/hooks/useGolfData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { isHandicapInRange } from '@/lib/handicapRange';
+
+function getRoundStartDate(round: RoundWithDetails) {
+  const [year, month, day] = round.date.split('-').map(Number);
+  const [hours = 0, minutes = 0] = round.time.split(':').map(Number);
+  return new Date(year, (month || 1) - 1, day || 1, hours || 0, minutes || 0, 0, 0);
+}
+
+function isUpcomingRound(round: RoundWithDetails, now: Date) {
+  return getRoundStartDate(round).getTime() > now.getTime();
+}
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,10 +21,12 @@ export default function Home() {
   const { data: rounds = [], isLoading } = useRounds();
   const { data: profile } = useProfile();
   const { t, formatLabel } = useLanguage();
+  const now = new Date();
 
-  const openCount = rounds.filter(r => r.status === 'open').length;
+  const upcomingRounds = rounds.filter((round) => isUpcomingRound(round, now));
+  const openCount = upcomingRounds.filter(r => r.status === 'open').length;
 
-  const filteredRounds = rounds.filter((round) => {
+  const filteredRounds = upcomingRounds.filter((round) => {
     const localizedFormat = formatLabel(round.format).toLowerCase();
     const normalizedQuery = searchQuery.toLowerCase();
     const matchesSearch = 
