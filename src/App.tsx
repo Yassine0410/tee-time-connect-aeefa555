@@ -10,11 +10,13 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import CreateRound from "./pages/CreateRound";
 import RoundDetails from "./pages/RoundDetails";
+import RoundReviews from "./pages/RoundReviews";
 import MyRounds from "./pages/MyRounds";
 import Leaderboard from "./pages/Leaderboard";
 import Messages from "./pages/Messages";
 import Chat from "./pages/Chat";
 import EditProfile from "./pages/EditProfile";
+import Reviews from "./pages/Reviews";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -44,8 +46,10 @@ function ProtectedRoutes() {
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/create" element={<CreateRound />} />
         <Route path="/round/:id" element={<RoundDetails />} />
+        <Route path="/round/:id/reviews" element={<RoundReviews />} />
         <Route path="/rounds" element={<MyRounds />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/reviews" element={<Reviews />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/chat/:id" element={<Chat />} />
         <Route path="*" element={<NotFound />} />

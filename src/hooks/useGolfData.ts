@@ -2,6 +2,37 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+function isMissingParticipationStatusColumnError(error: any) {
+  const message = String(error?.message || '').toLowerCase();
+  return message.includes('participation_status') && message.includes('round_players');
+}
+
+async function insertRoundPlayerWithCompatibility(roundId: string, profileId: string) {
+  const withStatus = await supabase
+    .from('round_players')
+    .insert({
+      round_id: roundId,
+      profile_id: profileId,
+      participation_status: 'joined',
+    });
+
+  if (!withStatus.error) return;
+
+  // Backward-compatible fallback for environments where the migration is not applied yet.
+  if (!isMissingParticipationStatusColumnError(withStatus.error)) {
+    throw withStatus.error;
+  }
+
+  const fallback = await supabase
+    .from('round_players')
+    .insert({
+      round_id: roundId,
+      profile_id: profileId,
+    });
+
+  if (fallback.error) throw fallback.error;
+}
+
 // Types derived from DB
 export interface ProfileRow {
   id: string;
@@ -298,10 +329,7 @@ export function useCreateRound() {
       if (error) throw error;
 
       // Auto-join the organizer as a player
-      const { error: joinError } = await supabase
-        .from('round_players')
-        .insert({ round_id: round.id, profile_id: profile.id });
-      if (joinError) throw joinError;
+      await insertRoundPlayerWithCompatibility(round.id, profile.id);
 
       return round;
     },
@@ -320,10 +348,7 @@ export function useJoinRound() {
   return useMutation({
     mutationFn: async (roundId: string) => {
       if (!profile) throw new Error('Profile not found');
-      const { error } = await supabase
-        .from('round_players')
-        .insert({ round_id: roundId, profile_id: profile.id });
-      if (error) throw error;
+      await insertRoundPlayerWithCompatibility(roundId, profile.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
