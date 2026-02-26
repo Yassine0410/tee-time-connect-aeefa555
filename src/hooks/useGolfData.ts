@@ -333,22 +333,58 @@ export function useJoinRound() {
   });
 }
 
-// Leave round
+// Leave round (handles host transfer / round deletion)
 export function useLeaveRound() {
   const queryClient = useQueryClient();
   const { data: profile } = useProfile();
 
   return useMutation({
-    mutationFn: async (roundId: string) => {
+    mutationFn: async ({ roundId, isOrganizer, otherPlayers }: {
+      roundId: string;
+      isOrganizer: boolean;
+      otherPlayers: ProfileRow[];
+    }) => {
       if (!profile) throw new Error('Profile not found');
+
+      if (isOrganizer && otherPlayers.length === 0) {
+        // Host leaves alone → delete the round (cascade will clean round_players & conversation)
+        const { error } = await supabase
+          .from('golf_rounds')
+          .delete()
+          .eq('id', roundId);
+        if (error) throw error;
+        return 'deleted' as const;
+      }
+
+      if (isOrganizer && otherPlayers.length > 0) {
+        // Transfer host to earliest joined player, then leave
+        const { data: earliest, error: fetchErr } = await supabase
+          .from('round_players')
+          .select('profile_id')
+          .eq('round_id', roundId)
+          .neq('profile_id', profile.id)
+          .order('joined_at', { ascending: true })
+          .limit(1)
+          .single();
+        if (fetchErr) throw fetchErr;
+
+        const { error: transferErr } = await supabase
+          .from('golf_rounds')
+          .update({ organizer_id: earliest.profile_id })
+          .eq('id', roundId);
+        if (transferErr) throw transferErr;
+      }
+
+      // Remove the player
       const { error } = await supabase
         .from('round_players')
         .delete()
         .eq('round_id', roundId)
         .eq('profile_id', profile.id);
       if (error) throw error;
+      return 'left' as const;
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
       queryClient.invalidateQueries({ queryKey: ['round'] });
       queryClient.invalidateQueries({ queryKey: ['my-rounds'] });
