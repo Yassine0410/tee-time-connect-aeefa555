@@ -196,13 +196,13 @@ const frTranslations: Record<TranslationKey, string> = {
   "nav.profile": "Profil",
 
   "home.title": "Trouve ta partie",
-  "home.subtitle": "Connecte-toi avec des golfeurs pres de toi",
+  "home.subtitle": "Connecte-toi avec des golfeurs pres de chez toi",
   "home.searchPlaceholder": "Rechercher parcours, formats...",
   "home.openRounds": "Parties ouvertes",
   "home.thisWeek": "Cette semaine",
-  "home.upcomingRounds": "Parties a venir",
-  "home.noRoundsFound": "Aucune partie trouvee",
-  "home.noRoundsHint": "Ajuste ta recherche ou cree une nouvelle partie !",
+  "home.upcomingRounds": "Parties à venir",
+  "home.noRoundsFound": "Aucune partie trouvée",
+  "home.noRoundsHint": "Ajuste ta recherche ou crée une nouvelle partie !",
 
   "profile.title": "Profil",
   "profile.handicap": "Handicap",
