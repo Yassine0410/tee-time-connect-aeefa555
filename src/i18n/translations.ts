@@ -1,0 +1,416 @@
+import { enUS, fr, type Locale } from "date-fns/locale";
+
+export type Language = "en" | "fr";
+
+const enTranslations = {
+  "common.error": "Error",
+  "common.user": "User",
+  "common.unknown": "Unknown",
+  "common.memberSince": "Member since {year}",
+  "common.notSet": "Not set",
+
+  "language.label": "Language",
+  "language.english": "English",
+  "language.french": "French",
+
+  "nav.home": "Home",
+  "nav.rounds": "Rounds",
+  "nav.create": "Create",
+  "nav.chat": "Chat",
+  "nav.profile": "Profile",
+
+  "home.title": "Find Your Round",
+  "home.subtitle": "Connect with golfers near you",
+  "home.searchPlaceholder": "Search courses, formats...",
+  "home.openRounds": "Open Rounds",
+  "home.thisWeek": "This Week",
+  "home.upcomingRounds": "Upcoming Rounds",
+  "home.noRoundsFound": "No rounds found",
+  "home.noRoundsHint": "Try adjusting your search or create a new round!",
+
+  "profile.title": "Profile",
+  "profile.handicap": "Handicap",
+  "profile.club": "Club",
+  "profile.memberSince": "Member since",
+  "profile.editProfile": "Edit Profile",
+  "profile.leaderboard": "Leaderboard",
+  "profile.myRounds": "My Rounds",
+  "profile.newGolfer": "New Golfer",
+  "profile.noHomeClub": "No home club set",
+  "profile.signOut": "Sign Out",
+
+  "createRound.title": "Create a Round",
+  "createRound.subtitle": "Invite golfers to join you",
+  "createRound.date": "Date",
+  "createRound.selectDate": "Select a date",
+  "createRound.teeTime": "Tee Time",
+  "createRound.selectTime": "Select a time",
+  "createRound.golfCourse": "Golf Course",
+  "createRound.selectCourse": "Select a course",
+  "createRound.holesPar": "{holes} holes - Par {par}",
+  "createRound.gameFormat": "Game Format",
+  "createRound.players": "Number of Players",
+  "createRound.playerLevel": "Player Level",
+  "createRound.descriptionOptional": "Description (Optional)",
+  "createRound.descriptionPlaceholder": "Add any details about your round...",
+  "createRound.infoNote":
+    "Your round will be visible to all golfers in the area. You can cancel or edit it anytime before it starts.",
+  "createRound.creating": "Creating...",
+  "createRound.publish": "Publish Round",
+  "createRound.requiredFields": "Please fill in all required fields",
+  "createRound.successTitle": "Round created successfully!",
+  "createRound.successDesc": "Other golfers can now join your round.",
+  "createRound.failTitle": "Failed to create round",
+
+  "roundCard.full": "Full",
+  "roundCard.spots": "{count} spots",
+
+  "roundDetails.title": "Round Details",
+  "roundDetails.notFoundTitle": "Round Not Found",
+  "roundDetails.notFoundMessage": "This round doesn't exist or has been removed.",
+  "roundDetails.backHome": "Back to Home",
+  "roundDetails.leftRound": "You left the round",
+  "roundDetails.joinedRound": "You joined the round!",
+  "roundDetails.joinedRoundDesc": "See you at {course}!",
+  "roundDetails.actionFailed": "Action failed",
+  "roundDetails.linkCopied": "Link copied to clipboard!",
+  "roundDetails.failedOpenChat": "Failed to open chat",
+  "roundDetails.spotsLeft": "{count} spots left",
+  "roundDetails.date": "Date",
+  "roundDetails.teeTime": "Tee Time",
+  "roundDetails.format": "Format",
+  "roundDetails.level": "Level",
+  "roundDetails.organizedBy": "ORGANIZED BY",
+  "roundDetails.players": "PLAYERS ({current}/{total})",
+  "roundDetails.you": "(You)",
+  "roundDetails.spotAvailable": "{count} {word} available",
+  "roundDetails.spot": "spot",
+  "roundDetails.spotsWord": "spots",
+  "roundDetails.leaveRound": "Leave Round",
+  "roundDetails.roundIsFull": "Round is Full",
+  "roundDetails.joinRound": "Join This Round",
+  "roundDetails.messageOrganizer": "Message Organizer",
+  "roundDetails.groupChat": "Round Group Chat",
+
+  "myRounds.title": "My Rounds",
+  "myRounds.subtitle": "Your upcoming and past games",
+  "myRounds.upcoming": "Upcoming",
+  "myRounds.past": "Past Rounds",
+  "myRounds.noUpcomingTitle": "No upcoming rounds",
+  "myRounds.noUpcomingHint": "Find a round to join or create your own!",
+  "myRounds.createRound": "Create a Round",
+  "myRounds.playedWith": "Played with {count} golfers",
+  "myRounds.completed": "Completed",
+  "myRounds.noPast": "No past rounds yet.",
+
+  "leaderboard.title": "Leaderboard",
+  "leaderboard.subtitle": "Based on wins",
+  "leaderboard.noRankings": "No rankings yet",
+  "leaderboard.noRankingsHint": "Rankings will appear once rounds are completed.",
+  "leaderboard.victory": "win",
+  "leaderboard.victories": "wins",
+  "leaderboard.allPlayers": "All players",
+  "leaderboard.you": "(you)",
+  "leaderboard.played": "{count} played",
+
+  "messages.title": "Messages",
+  "messages.emptyTitle": "No messages yet",
+  "messages.emptyHint": "Join a round to start chatting!",
+  "messages.roundPrefix": "Round",
+  "messages.roundChatDefault": "Round Chat",
+  "messages.noMessagesYet": "No messages yet",
+
+  "chat.title": "Chat",
+  "chat.roundChatDefault": "Round Chat",
+  "chat.empty": "No messages yet. Say hello!",
+  "chat.inputPlaceholder": "Type a message...",
+
+  "auth.loginTagline": "Sign in to join your rounds",
+  "auth.signupTagline": "Create your golfer account",
+  "auth.forgotTagline": "Reset your password",
+  "auth.email": "Email",
+  "auth.password": "Password",
+  "auth.name": "Name",
+  "auth.loginLoading": "Signing in...",
+  "auth.login": "Sign In",
+  "auth.forgotPassword": "Forgot password?",
+  "auth.createAccount": "Create account",
+  "auth.namePlaceholder": "Your name",
+  "auth.passwordMin": "Min. 6 characters",
+  "auth.signupLoading": "Creating account...",
+  "auth.signup": "Sign Up",
+  "auth.backToLogin": "Back to sign in",
+  "auth.sendLinkLoading": "Sending...",
+  "auth.sendLink": "Send reset link",
+  "auth.signupSuccessTitle": "Sign up successful!",
+  "auth.signupSuccessDesc": "Check your email to confirm your account.",
+  "auth.emailSentTitle": "Email sent",
+  "auth.emailSentDesc": "Check your inbox to reset your password.",
+
+  "reset.invalidLink": "Invalid or expired link.",
+  "reset.title": "New password",
+  "reset.newPassword": "New password",
+  "reset.updateLoading": "Updating...",
+  "reset.update": "Update password",
+  "reset.updatedSuccess": "Password updated!",
+
+  "editProfile.title": "Edit Profile",
+  "editProfile.photoUpdated": "Photo updated!",
+  "editProfile.invalidHandicapTitle": "Invalid handicap",
+  "editProfile.invalidHandicapDesc": "Enter a value between -10 and 54",
+  "editProfile.nameRequired": "Name is required",
+  "editProfile.saved": "Profile saved!",
+  "editProfile.tapToChange": "Tap to change your photo",
+  "editProfile.name": "Name",
+  "editProfile.namePlaceholder": "Your name",
+  "editProfile.handicap": "Handicap",
+  "editProfile.club": "Club",
+  "editProfile.clubPlaceholder": "Your home golf club",
+  "editProfile.bio": "Bio",
+  "editProfile.bioPlaceholder": "A few words about you...",
+  "editProfile.saving": "Saving...",
+  "editProfile.save": "Save",
+  "editProfile.cancel": "Cancel",
+
+  "notFound.message": "Oops! Page not found",
+  "notFound.returnHome": "Return to Home",
+} as const;
+
+type TranslationKey = keyof typeof enTranslations;
+
+const frTranslations: Record<TranslationKey, string> = {
+  "common.error": "Erreur",
+  "common.user": "Utilisateur",
+  "common.unknown": "Inconnu",
+  "common.memberSince": "Membre depuis {year}",
+  "common.notSet": "Non renseigne",
+
+  "language.label": "Langue",
+  "language.english": "Anglais",
+  "language.french": "Francais",
+
+  "nav.home": "Accueil",
+  "nav.rounds": "Parties",
+  "nav.create": "Creer",
+  "nav.chat": "Messages",
+  "nav.profile": "Profil",
+
+  "home.title": "Trouve ta partie",
+  "home.subtitle": "Connecte-toi avec des golfeurs pres de toi",
+  "home.searchPlaceholder": "Rechercher parcours, formats...",
+  "home.openRounds": "Parties ouvertes",
+  "home.thisWeek": "Cette semaine",
+  "home.upcomingRounds": "Parties a venir",
+  "home.noRoundsFound": "Aucune partie trouvee",
+  "home.noRoundsHint": "Ajuste ta recherche ou cree une nouvelle partie !",
+
+  "profile.title": "Profil",
+  "profile.handicap": "Handicap",
+  "profile.club": "Club",
+  "profile.memberSince": "Membre depuis",
+  "profile.editProfile": "Modifier le profil",
+  "profile.leaderboard": "Classement",
+  "profile.myRounds": "Mes parties",
+  "profile.newGolfer": "Nouveau golfeur",
+  "profile.noHomeClub": "Aucun club defini",
+  "profile.signOut": "Se deconnecter",
+
+  "createRound.title": "Creer une partie",
+  "createRound.subtitle": "Invite des golfeurs a te rejoindre",
+  "createRound.date": "Date",
+  "createRound.selectDate": "Choisir une date",
+  "createRound.teeTime": "Heure de depart",
+  "createRound.selectTime": "Choisir une heure",
+  "createRound.golfCourse": "Parcours",
+  "createRound.selectCourse": "Choisir un parcours",
+  "createRound.holesPar": "{holes} trous - Par {par}",
+  "createRound.gameFormat": "Format de jeu",
+  "createRound.players": "Nombre de joueurs",
+  "createRound.playerLevel": "Niveau des joueurs",
+  "createRound.descriptionOptional": "Description (optionnel)",
+  "createRound.descriptionPlaceholder": "Ajoute des details sur ta partie...",
+  "createRound.infoNote":
+    "Ta partie sera visible par les golfeurs de la zone. Tu pourras la modifier ou l'annuler avant le depart.",
+  "createRound.creating": "Creation...",
+  "createRound.publish": "Publier la partie",
+  "createRound.requiredFields": "Merci de remplir tous les champs obligatoires",
+  "createRound.successTitle": "Partie creee avec succes !",
+  "createRound.successDesc": "Les autres golfeurs peuvent maintenant rejoindre ta partie.",
+  "createRound.failTitle": "Echec de creation de la partie",
+
+  "roundCard.full": "Complet",
+  "roundCard.spots": "{count} places",
+
+  "roundDetails.title": "Details de la partie",
+  "roundDetails.notFoundTitle": "Partie introuvable",
+  "roundDetails.notFoundMessage": "Cette partie n'existe pas ou a ete supprimee.",
+  "roundDetails.backHome": "Retour a l'accueil",
+  "roundDetails.leftRound": "Tu as quitte la partie",
+  "roundDetails.joinedRound": "Tu as rejoint la partie !",
+  "roundDetails.joinedRoundDesc": "A bientot sur {course} !",
+  "roundDetails.actionFailed": "Action echouee",
+  "roundDetails.linkCopied": "Lien copie dans le presse-papiers !",
+  "roundDetails.failedOpenChat": "Impossible d'ouvrir la discussion",
+  "roundDetails.spotsLeft": "{count} places restantes",
+  "roundDetails.date": "Date",
+  "roundDetails.teeTime": "Heure de depart",
+  "roundDetails.format": "Format",
+  "roundDetails.level": "Niveau",
+  "roundDetails.organizedBy": "ORGANISE PAR",
+  "roundDetails.players": "JOUEURS ({current}/{total})",
+  "roundDetails.you": "(toi)",
+  "roundDetails.spotAvailable": "{count} {word} disponible(s)",
+  "roundDetails.spot": "place",
+  "roundDetails.spotsWord": "places",
+  "roundDetails.leaveRound": "Quitter la partie",
+  "roundDetails.roundIsFull": "Partie complete",
+  "roundDetails.joinRound": "Rejoindre cette partie",
+  "roundDetails.messageOrganizer": "Ecrire a l'organisateur",
+  "roundDetails.groupChat": "Discussion de groupe",
+
+  "myRounds.title": "Mes parties",
+  "myRounds.subtitle": "Tes parties a venir et passees",
+  "myRounds.upcoming": "A venir",
+  "myRounds.past": "Parties passees",
+  "myRounds.noUpcomingTitle": "Aucune partie a venir",
+  "myRounds.noUpcomingHint": "Trouve une partie a rejoindre ou cree la tienne !",
+  "myRounds.createRound": "Creer une partie",
+  "myRounds.playedWith": "Jouee avec {count} golfeurs",
+  "myRounds.completed": "Terminee",
+  "myRounds.noPast": "Aucune partie passee.",
+
+  "leaderboard.title": "Classement",
+  "leaderboard.subtitle": "Base sur les victoires",
+  "leaderboard.noRankings": "Aucun classement pour le moment",
+  "leaderboard.noRankingsHint": "Le classement apparaitra apres des parties terminees.",
+  "leaderboard.victory": "victoire",
+  "leaderboard.victories": "victoires",
+  "leaderboard.allPlayers": "Tous les joueurs",
+  "leaderboard.you": "(toi)",
+  "leaderboard.played": "{count} jouees",
+
+  "messages.title": "Messages",
+  "messages.emptyTitle": "Pas encore de messages",
+  "messages.emptyHint": "Rejoins une partie pour commencer a discuter !",
+  "messages.roundPrefix": "Partie",
+  "messages.roundChatDefault": "Discussion de partie",
+  "messages.noMessagesYet": "Pas encore de messages",
+
+  "chat.title": "Discussion",
+  "chat.roundChatDefault": "Discussion de partie",
+  "chat.empty": "Pas encore de messages. Dis bonjour !",
+  "chat.inputPlaceholder": "Ecris un message...",
+
+  "auth.loginTagline": "Connecte-toi pour rejoindre tes parties",
+  "auth.signupTagline": "Cree ton compte golfeur",
+  "auth.forgotTagline": "Reinitialise ton mot de passe",
+  "auth.email": "Email",
+  "auth.password": "Mot de passe",
+  "auth.name": "Nom",
+  "auth.loginLoading": "Connexion...",
+  "auth.login": "Se connecter",
+  "auth.forgotPassword": "Mot de passe oublie ?",
+  "auth.createAccount": "Creer un compte",
+  "auth.namePlaceholder": "Ton nom",
+  "auth.passwordMin": "Min. 6 caracteres",
+  "auth.signupLoading": "Inscription...",
+  "auth.signup": "S'inscrire",
+  "auth.backToLogin": "Retour a la connexion",
+  "auth.sendLinkLoading": "Envoi...",
+  "auth.sendLink": "Envoyer le lien",
+  "auth.signupSuccessTitle": "Inscription reussie !",
+  "auth.signupSuccessDesc": "Verifie ton email pour confirmer ton compte.",
+  "auth.emailSentTitle": "Email envoye",
+  "auth.emailSentDesc": "Verifie ta boite mail pour reinitialiser ton mot de passe.",
+
+  "reset.invalidLink": "Lien invalide ou expire.",
+  "reset.title": "Nouveau mot de passe",
+  "reset.newPassword": "Nouveau mot de passe",
+  "reset.updateLoading": "Mise a jour...",
+  "reset.update": "Mettre a jour",
+  "reset.updatedSuccess": "Mot de passe mis a jour !",
+
+  "editProfile.title": "Modifier le profil",
+  "editProfile.photoUpdated": "Photo mise a jour !",
+  "editProfile.invalidHandicapTitle": "Handicap invalide",
+  "editProfile.invalidHandicapDesc": "Entre une valeur entre -10 et 54",
+  "editProfile.nameRequired": "Nom requis",
+  "editProfile.saved": "Profil enregistre !",
+  "editProfile.tapToChange": "Appuie pour changer ta photo",
+  "editProfile.name": "Nom",
+  "editProfile.namePlaceholder": "Ton nom",
+  "editProfile.handicap": "Handicap",
+  "editProfile.club": "Club",
+  "editProfile.clubPlaceholder": "Ton club de golf",
+  "editProfile.bio": "Bio",
+  "editProfile.bioPlaceholder": "Quelques mots sur toi...",
+  "editProfile.saving": "Enregistrement...",
+  "editProfile.save": "Enregistrer",
+  "editProfile.cancel": "Annuler",
+
+  "notFound.message": "Oups ! Page introuvable",
+  "notFound.returnHome": "Retour a l'accueil",
+};
+
+const translations = {
+  en: enTranslations,
+  fr: frTranslations,
+} as const;
+
+export type TranslateParams = Record<string, string | number>;
+
+function interpolate(template: string, params?: TranslateParams) {
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
+    const value = params[key];
+    return value === undefined ? match : String(value);
+  });
+}
+
+export function translate(language: Language, key: TranslationKey, params?: TranslateParams) {
+  const template = translations[language][key] ?? translations.en[key];
+  return interpolate(template, params);
+}
+
+const roundFormatLabels: Record<string, Record<Language, string>> = {
+  "Stroke Play": { en: "Stroke Play", fr: "Stroke Play" },
+  Stableford: { en: "Stableford", fr: "Stableford" },
+  "Match Play": { en: "Match Play", fr: "Match Play" },
+  "Best Ball": { en: "Best Ball", fr: "Meilleure balle" },
+  Scramble: { en: "Scramble", fr: "Scramble" },
+  Skins: { en: "Skins", fr: "Skins" },
+};
+
+const handicapRangeLabels: Record<string, Record<Language, string>> = {
+  "All Levels": { en: "All Levels", fr: "Tous niveaux" },
+  "0-10": { en: "0-10", fr: "0-10" },
+  "10-20": { en: "10-20", fr: "10-20" },
+  "20-30": { en: "20-30", fr: "20-30" },
+  "30+": { en: "30+", fr: "30+" },
+};
+
+const roundStatusLabels: Record<string, Record<Language, string>> = {
+  completed: { en: "Completed", fr: "Terminee" },
+  full: { en: "Full", fr: "Complet" },
+  open: { en: "Open", fr: "Ouvert" },
+  cancelled: { en: "Cancelled", fr: "Annulee" },
+};
+
+export function getRoundFormatLabel(format: string, language: Language) {
+  return roundFormatLabels[format]?.[language] ?? format;
+}
+
+export function getHandicapRangeLabel(range: string, language: Language) {
+  return handicapRangeLabels[range]?.[language] ?? range;
+}
+
+export function getRoundStatusLabel(status: string, language: Language) {
+  return roundStatusLabels[status]?.[language] ?? status;
+}
+
+export const dateLocales: Record<Language, Locale> = {
+  en: enUS,
+  fr,
+};
+
+export const availableLanguages: Language[] = ["en", "fr"];

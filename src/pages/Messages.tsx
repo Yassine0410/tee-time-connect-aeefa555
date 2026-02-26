@@ -5,16 +5,17 @@ import { PlayerAvatar } from '@/components/PlayerAvatar';
 import { useConversations } from '@/hooks/useChat';
 import { useProfile } from '@/hooks/useGolfData';
 import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Messages() {
   const navigate = useNavigate();
   const { data: conversations, isLoading } = useConversations();
   const { data: profile } = useProfile();
+  const { t, dateLocale } = useLanguage();
 
   return (
     <div className="screen-content">
-      <Header title="Messages" />
+      <Header title={t('messages.title')} />
 
       {isLoading ? (
         <div className="flex justify-center py-12">
@@ -23,22 +24,21 @@ export default function Messages() {
       ) : !conversations || conversations.length === 0 ? (
         <div className="text-center py-12">
           <MessageCircle size={48} className="mx-auto text-muted-foreground mb-3" />
-          <p className="text-muted-foreground">No messages yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Join a round to start chatting!</p>
+          <p className="text-muted-foreground">{t('messages.emptyTitle')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('messages.emptyHint')}</p>
         </div>
       ) : (
         <div className="space-y-2">
           {conversations.map((conv) => {
-            const otherParticipants = conv.participants.filter(p => p.id !== profile?.id);
-            const displayName = conv.type === 'round'
-              ? `⛳ ${conv.round_name || 'Round Chat'}`
-              : otherParticipants[0]?.name || 'Unknown';
-            const avatarName = conv.type === 'round'
-              ? conv.round_name || 'Round'
-              : otherParticipants[0]?.name || 'U';
+            const otherParticipants = conv.participants.filter((p) => p.id !== profile?.id);
+            const displayName =
+              conv.type === 'round'
+                ? `${t('messages.roundPrefix')}: ${conv.round_name || t('messages.roundChatDefault')}`
+                : otherParticipants[0]?.name || t('common.unknown');
+            const avatarName = conv.type === 'round' ? conv.round_name || t('messages.roundChatDefault') : otherParticipants[0]?.name || t('common.user');
             const avatarUrl = conv.type === 'dm' ? otherParticipants[0]?.avatar_url || undefined : undefined;
             const timeAgo = conv.last_message
-              ? formatDistanceToNow(new Date(conv.last_message.created_at), { addSuffix: true, locale: fr })
+              ? formatDistanceToNow(new Date(conv.last_message.created_at), { addSuffix: true, locale: dateLocale })
               : '';
 
             return (
@@ -59,9 +59,7 @@ export default function Messages() {
                     <p className="font-semibold text-foreground truncate">{displayName}</p>
                     {timeAgo && <span className="text-xs text-muted-foreground shrink-0 ml-2">{timeAgo}</span>}
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {conv.last_message?.content || 'No messages yet'}
-                  </p>
+                  <p className="text-sm text-muted-foreground truncate">{conv.last_message?.content || t('messages.noMessagesYet')}</p>
                 </div>
               </button>
             );

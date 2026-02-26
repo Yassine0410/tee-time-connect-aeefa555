@@ -4,6 +4,7 @@ import { PlayerAvatarStack } from './PlayerAvatar';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { RoundWithDetails } from '@/hooks/useGolfData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RoundCardProps {
   round: RoundWithDetails;
@@ -11,10 +12,11 @@ interface RoundCardProps {
 
 export function RoundCard({ round }: RoundCardProps) {
   const navigate = useNavigate();
+  const { t, dateLocale, formatLabel, handicapLabel } = useLanguage();
   const spotsLeft = round.players_needed - round.players.length;
   const isFull = spotsLeft <= 0;
   
-  const formattedDate = format(parseISO(round.date), 'EEE, MMM d');
+  const formattedDate = format(parseISO(round.date), 'EEE, MMM d', { locale: dateLocale });
 
   return (
     <button
@@ -36,7 +38,7 @@ export function RoundCard({ round }: RoundCardProps) {
           'shrink-0 ml-2',
           isFull ? 'status-full' : 'status-open'
         )}>
-          {isFull ? 'Full' : `${spotsLeft} spots`}
+          {isFull ? t('roundCard.full') : t('roundCard.spots', { count: spotsLeft })}
         </div>
       </div>
 
@@ -52,7 +54,7 @@ export function RoundCard({ round }: RoundCardProps) {
         </div>
         <div className="golf-badge-primary">
           <Flag size={12} className="mr-1" />
-          {round.format}
+          {formatLabel(round.format)}
         </div>
       </div>
 
@@ -69,7 +71,7 @@ export function RoundCard({ round }: RoundCardProps) {
           </div>
         </div>
         <div className="golf-badge-muted">
-          HCP {round.handicap_range}
+          HCP {handicapLabel(round.handicap_range)}
         </div>
       </div>
 

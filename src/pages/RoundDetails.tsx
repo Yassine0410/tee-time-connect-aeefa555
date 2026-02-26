@@ -7,6 +7,7 @@ import { useRound, useProfile, useJoinRound, useLeaveRound } from '@/hooks/useGo
 import { useGetOrCreateDM, useRoundConversation } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RoundDetails() {
   const { id } = useParams();
@@ -17,11 +18,12 @@ export default function RoundDetails() {
   const leaveRound = useLeaveRound();
   const getOrCreateDM = useGetOrCreateDM();
   const { data: roundConversationId } = useRoundConversation(id);
+  const { t, dateLocale, formatLabel, handicapLabel } = useLanguage();
 
   if (isLoading) {
     return (
       <div className="screen-content">
-        <Header title="Round Details" showBack />
+        <Header title={t('roundDetails.title')} showBack />
         <div className="flex justify-center py-12">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -32,19 +34,21 @@ export default function RoundDetails() {
   if (!round) {
     return (
       <div className="screen-content">
-        <Header title="Round Not Found" showBack />
+        <Header title={t('roundDetails.notFoundTitle')} showBack />
         <div className="text-center py-12">
-          <p className="text-muted-foreground">This round doesn't exist or has been removed.</p>
-          <button onClick={() => navigate('/')} className="btn-golf-primary mt-4">Back to Home</button>
+          <p className="text-muted-foreground">{t('roundDetails.notFoundMessage')}</p>
+          <button onClick={() => navigate('/')} className="btn-golf-primary mt-4">
+            {t('roundDetails.backHome')}
+          </button>
         </div>
       </div>
     );
   }
 
-  const hasJoined = profile ? round.players.some(p => p.id === profile.id) : false;
+  const hasJoined = profile ? round.players.some((p) => p.id === profile.id) : false;
   const spotsLeft = round.players_needed - round.players.length;
   const isFull = spotsLeft <= 0;
-  const formattedDate = format(parseISO(round.date), 'EEEE, MMMM d, yyyy');
+  const formattedDate = format(parseISO(round.date), 'EEEE, MMMM d, yyyy', { locale: dateLocale });
   const isOrganizer = profile ? round.organizer.id === profile.id : false;
 
   const handleJoinLeave = async () => {
@@ -52,18 +56,20 @@ export default function RoundDetails() {
     try {
       if (hasJoined) {
         await leaveRound.mutateAsync(id);
-        toast.success('You left the round');
+        toast.success(t('roundDetails.leftRound'));
       } else {
         await joinRound.mutateAsync(id);
-        toast.success('You joined the round!', { description: `See you at ${round.course.name}!` });
+        toast.success(t('roundDetails.joinedRound'), {
+          description: t('roundDetails.joinedRoundDesc', { course: round.course.name }),
+        });
       }
     } catch (err: any) {
-      toast.error('Action failed', { description: err.message });
+      toast.error(t('roundDetails.actionFailed'), { description: err.message });
     }
   };
 
   const handleShare = () => {
-    toast.success('Link copied to clipboard!');
+    toast.success(t('roundDetails.linkCopied'));
   };
 
   const handleMessageOrganizer = async () => {
@@ -72,7 +78,7 @@ export default function RoundDetails() {
       const convId = await getOrCreateDM.mutateAsync(round.organizer.id);
       navigate(`/chat/${convId}`);
     } catch (err: any) {
-      toast.error('Failed to open chat', { description: err.message });
+      toast.error(t('roundDetails.failedOpenChat'), { description: err.message });
     }
   };
 
@@ -84,8 +90,8 @@ export default function RoundDetails() {
 
   return (
     <div className="screen-content">
-      <Header 
-        title="Round Details"
+      <Header
+        title={t('roundDetails.title')}
         showBack
         action={
           <button onClick={handleShare} className="p-2 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
@@ -94,7 +100,6 @@ export default function RoundDetails() {
         }
       />
 
-      {/* Main Info Card */}
       <div className="golf-card mb-4 animate-fade-in">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
@@ -105,7 +110,7 @@ export default function RoundDetails() {
             </p>
           </div>
           <div className={cn('shrink-0 ml-2', isFull && !hasJoined ? 'status-full' : 'status-open')}>
-            {isFull && !hasJoined ? 'Full' : `${spotsLeft} spots left`}
+            {isFull && !hasJoined ? t('roundCard.full') : t('roundDetails.spotsLeft', { count: spotsLeft })}
           </div>
         </div>
 
@@ -117,7 +122,7 @@ export default function RoundDetails() {
               <Calendar size={18} className="text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Date</p>
+              <p className="text-xs text-muted-foreground">{t('roundDetails.date')}</p>
               <p className="font-medium text-foreground text-sm">{formattedDate}</p>
             </div>
           </div>
@@ -126,7 +131,7 @@ export default function RoundDetails() {
               <Clock size={18} className="text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Tee Time</p>
+              <p className="text-xs text-muted-foreground">{t('roundDetails.teeTime')}</p>
               <p className="font-medium text-foreground text-sm">{round.time}</p>
             </div>
           </div>
@@ -135,8 +140,8 @@ export default function RoundDetails() {
               <Flag size={18} className="text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Format</p>
-              <p className="font-medium text-foreground text-sm">{round.format}</p>
+              <p className="text-xs text-muted-foreground">{t('roundDetails.format')}</p>
+              <p className="font-medium text-foreground text-sm">{formatLabel(round.format)}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -144,8 +149,8 @@ export default function RoundDetails() {
               <Users size={18} className="text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Level</p>
-              <p className="font-medium text-foreground text-sm">HCP {round.handicap_range}</p>
+              <p className="text-xs text-muted-foreground">{t('roundDetails.level')}</p>
+              <p className="font-medium text-foreground text-sm">HCP {handicapLabel(round.handicap_range)}</p>
             </div>
           </div>
         </div>
@@ -158,52 +163,51 @@ export default function RoundDetails() {
         )}
       </div>
 
-      {/* Organizer */}
       <div className="golf-card mb-4 animate-fade-in">
-        <h3 className="text-sm font-semibold text-muted-foreground mb-3">ORGANIZED BY</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground mb-3">{t('roundDetails.organizedBy')}</h3>
         <div className="flex items-center gap-3">
           <PlayerAvatar name={round.organizer.name} avatarUrl={round.organizer.avatar_url || undefined} size="lg" />
           <div className="flex-1">
             <p className="font-semibold text-foreground">{round.organizer.name}</p>
-            <p className="text-sm text-muted-foreground">{round.organizer.home_club}</p>
+            <p className="text-sm text-muted-foreground">{round.organizer.home_club || t('common.notSet')}</p>
           </div>
           <span className="golf-badge-primary">HCP {round.organizer.handicap}</span>
         </div>
       </div>
 
-      {/* Players List */}
       <div className="golf-card mb-6 animate-fade-in">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-muted-foreground">
-            PLAYERS ({round.players.length}/{round.players_needed})
+            {t('roundDetails.players', { current: round.players.length, total: round.players_needed })}
           </h3>
           <div className="flex -space-x-1">
             {Array.from({ length: round.players_needed }).map((_, i) => (
-              <div key={i} className={cn(
-                'w-3 h-3 rounded-full border-2 border-card',
-                i < round.players.length ? 'bg-primary' : 'bg-muted'
-              )} />
+              <div
+                key={i}
+                className={cn('w-3 h-3 rounded-full border-2 border-card', i < round.players.length ? 'bg-primary' : 'bg-muted')}
+              />
             ))}
           </div>
         </div>
 
         <div className="space-y-3">
           {round.players.map((player) => (
-            <div key={player.id} className={cn(
-              "flex items-center gap-3 py-2",
-              profile && player.id === profile.id && "bg-primary/5 -mx-4 px-4 rounded-lg"
-            )}>
+            <div
+              key={player.id}
+              className={cn(
+                'flex items-center gap-3 py-2',
+                profile && player.id === profile.id && 'bg-primary/5 -mx-4 px-4 rounded-lg'
+              )}
+            >
               <PlayerAvatar name={player.name} avatarUrl={player.avatar_url || undefined} size="md" />
               <div className="flex-1">
                 <p className="font-medium text-foreground text-sm">
-                  {player.name}{profile && player.id === profile.id ? ' (You)' : ''}
+                  {player.name}
+                  {profile && player.id === profile.id ? ` ${t('roundDetails.you')}` : ''}
                 </p>
-                <p className="text-xs text-muted-foreground">{player.home_club}</p>
+                <p className="text-xs text-muted-foreground">{player.home_club || t('common.notSet')}</p>
               </div>
-              <span className={cn(
-                "text-xs",
-                profile && player.id === profile.id ? "golf-badge-primary" : "golf-badge-muted"
-              )}>
+              <span className={cn('text-xs', profile && player.id === profile.id ? 'golf-badge-primary' : 'golf-badge-muted')}>
                 HCP {player.handicap}
               </span>
             </div>
@@ -214,49 +218,50 @@ export default function RoundDetails() {
                 <UserPlus size={16} className="text-muted-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">
-                {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} available
+                {t('roundDetails.spotAvailable', {
+                  count: spotsLeft,
+                  word: spotsLeft === 1 ? t('roundDetails.spot') : t('roundDetails.spotsWord'),
+                })}
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="space-y-3">
         {!isOrganizer && (
-          <button 
+          <button
             onClick={handleJoinLeave}
             disabled={joinRound.isPending || leaveRound.isPending || (isFull && !hasJoined)}
-            className={cn(
-              'w-full text-lg transition-all duration-200 disabled:opacity-50',
-              hasJoined ? 'btn-golf-outline' : 'btn-golf-accent'
-            )}
+            className={cn('w-full text-lg transition-all duration-200 disabled:opacity-50', hasJoined ? 'btn-golf-outline' : 'btn-golf-accent')}
           >
             {hasJoined ? (
-              <><UserMinus size={20} className="inline mr-2" />Leave Round</>
+              <>
+                <UserMinus size={20} className="inline mr-2" />
+                {t('roundDetails.leaveRound')}
+              </>
             ) : isFull ? (
-              'Round is Full'
+              t('roundDetails.roundIsFull')
             ) : (
-              <><UserPlus size={20} className="inline mr-2" />Join This Round</>
+              <>
+                <UserPlus size={20} className="inline mr-2" />
+                {t('roundDetails.joinRound')}
+              </>
             )}
           </button>
         )}
-        
+
         {!isOrganizer && (
-          <button
-            onClick={handleMessageOrganizer}
-            disabled={getOrCreateDM.isPending}
-            className="btn-golf-outline w-full"
-          >
+          <button onClick={handleMessageOrganizer} disabled={getOrCreateDM.isPending} className="btn-golf-outline w-full">
             <MessageCircle size={18} className="inline mr-2" />
-            Message Organizer
+            {t('roundDetails.messageOrganizer')}
           </button>
         )}
 
         {hasJoined && roundConversationId && (
           <button onClick={handleRoundChat} className="btn-golf-outline w-full">
             <MessagesSquare size={18} className="inline mr-2" />
-            Round Group Chat
+            {t('roundDetails.groupChat')}
           </button>
         )}
       </div>

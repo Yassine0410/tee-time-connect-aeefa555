@@ -7,6 +7,7 @@ import { useProfile, useUpdateProfile } from '@/hooks/useGolfData';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function EditProfile() {
   const updateProfile = useUpdateProfile();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLanguage();
 
   const [name, setName] = useState('');
   const [handicap, setHandicap] = useState('');
@@ -24,7 +26,6 @@ export default function EditProfile() {
   const [uploading, setUploading] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
-  // Initialize form values once profile is loaded
   if (profile && !initialized) {
     setName(profile.name || '');
     setHandicap(String(profile.handicap ?? 36));
@@ -43,20 +44,17 @@ export default function EditProfile() {
       const ext = file.name.split('.').pop();
       const path = `${user.id}/${Date.now()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(path, file, { upsert: true });
-
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(path);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('avatars').getPublicUrl(path);
 
       setAvatarUrl(publicUrl);
-      toast({ title: 'Photo mise à jour !' });
+      toast({ title: t('editProfile.photoUpdated') });
     } catch (err: any) {
-      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: err.message, variant: 'destructive' });
     } finally {
       setUploading(false);
     }
@@ -64,12 +62,16 @@ export default function EditProfile() {
 
   const handleSave = async () => {
     const hcpNum = parseInt(handicap, 10);
-    if (isNaN(hcpNum) || hcpNum < -10 || hcpNum > 54) {
-      toast({ title: 'Handicap invalide', description: 'Entre -10 et 54', variant: 'destructive' });
+    if (Number.isNaN(hcpNum) || hcpNum < -10 || hcpNum > 54) {
+      toast({
+        title: t('editProfile.invalidHandicapTitle'),
+        description: t('editProfile.invalidHandicapDesc'),
+        variant: 'destructive',
+      });
       return;
     }
     if (!name.trim()) {
-      toast({ title: 'Nom requis', variant: 'destructive' });
+      toast({ title: t('editProfile.nameRequired'), variant: 'destructive' });
       return;
     }
 
@@ -81,17 +83,17 @@ export default function EditProfile() {
         bio: bio.trim() || null,
         avatar_url: avatarUrl,
       });
-      toast({ title: 'Profil sauvegardé !' });
+      toast({ title: t('editProfile.saved') });
       navigate('/profile');
     } catch (err: any) {
-      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: err.message, variant: 'destructive' });
     }
   };
 
   if (isLoading || !profile) {
     return (
       <div className="screen-content">
-        <Header title="Modifier le profil" />
+        <Header title={t('editProfile.title')} />
         <div className="flex justify-center py-12">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -102,7 +104,7 @@ export default function EditProfile() {
   return (
     <div className="screen-content">
       <Header
-        title="Modifier le profil"
+        title={t('editProfile.title')}
         action={
           <button onClick={() => navigate('/profile')} className="p-2 rounded-xl text-muted-foreground hover:bg-muted transition-colors">
             <ArrowLeft size={22} />
@@ -110,15 +112,9 @@ export default function EditProfile() {
         }
       />
 
-      {/* Avatar */}
       <div className="flex flex-col items-center mb-8 animate-fade-in">
         <div className="relative">
-          <PlayerAvatar
-            name={name || 'User'}
-            avatarUrl={avatarUrl || undefined}
-            size="xl"
-            showRing
-          />
+          <PlayerAvatar name={name || t('common.user')} avatarUrl={avatarUrl || undefined} size="xl" showRing />
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
@@ -131,79 +127,60 @@ export default function EditProfile() {
             )}
           </button>
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleAvatarUpload}
-        />
-        <p className="text-sm text-muted-foreground mt-2">Appuie pour changer ta photo</p>
+        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+        <p className="text-sm text-muted-foreground mt-2">{t('editProfile.tapToChange')}</p>
       </div>
 
-      {/* Form */}
       <div className="space-y-5 animate-fade-in">
         <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">Nom</label>
+          <label className="text-sm font-medium text-foreground mb-1.5 block">{t('editProfile.name')}</label>
           <input
             className="golf-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Ton nom"
+            placeholder={t('editProfile.namePlaceholder')}
             maxLength={100}
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">Handicap</label>
-          <input
-            className="golf-input"
-            type="number"
-            value={handicap}
-            onChange={(e) => setHandicap(e.target.value)}
-            min={-10}
-            max={54}
-          />
+          <label className="text-sm font-medium text-foreground mb-1.5 block">{t('editProfile.handicap')}</label>
+          <input className="golf-input" type="number" value={handicap} onChange={(e) => setHandicap(e.target.value)} min={-10} max={54} />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">Club</label>
+          <label className="text-sm font-medium text-foreground mb-1.5 block">{t('editProfile.club')}</label>
           <input
             className="golf-input"
             value={homeClub}
             onChange={(e) => setHomeClub(e.target.value)}
-            placeholder="Ton club de golf"
+            placeholder={t('editProfile.clubPlaceholder')}
             maxLength={100}
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">Bio</label>
+          <label className="text-sm font-medium text-foreground mb-1.5 block">{t('editProfile.bio')}</label>
           <textarea
             className="golf-input min-h-[100px] resize-none"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="Quelques mots sur toi..."
+            placeholder={t('editProfile.bioPlaceholder')}
             maxLength={500}
           />
           <p className="text-xs text-muted-foreground mt-1 text-right">{bio.length}/500</p>
         </div>
       </div>
 
-      {/* Save */}
       <div className="mt-8 space-y-3">
-        <button
-          onClick={handleSave}
-          disabled={updateProfile.isPending}
-          className="w-full btn-golf-primary disabled:opacity-50"
-        >
-          {updateProfile.isPending ? 'Enregistrement...' : 'Enregistrer'}
+        <button onClick={handleSave} disabled={updateProfile.isPending} className="w-full btn-golf-primary disabled:opacity-50">
+          {updateProfile.isPending ? t('editProfile.saving') : t('editProfile.save')}
         </button>
         <button
           onClick={() => navigate('/profile')}
           className="w-full py-3 text-center text-muted-foreground font-medium hover:bg-muted rounded-xl transition-colors"
         >
-          Annuler
+          {t('editProfile.cancel')}
         </button>
       </div>
     </div>

@@ -1,18 +1,20 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, PlusCircle, User, Calendar, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { path: '/', icon: Home, label: 'Home' },
-  { path: '/rounds', icon: Calendar, label: 'Rounds' },
-  { path: '/create', icon: PlusCircle, label: 'Create' },
-  { path: '/messages', icon: MessageCircle, label: 'Chat' },
-  { path: '/profile', icon: User, label: 'Profile' },
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const navItems = [
+    { path: '/', icon: Home, label: t('nav.home') },
+    { path: '/rounds', icon: Calendar, label: t('nav.rounds') },
+    { path: '/create', icon: PlusCircle, label: t('nav.create') },
+    { path: '/messages', icon: MessageCircle, label: t('nav.chat') },
+    { path: '/profile', icon: User, label: t('nav.profile') },
+  ];
 
   // Hide bottom nav on chat detail pages
   if (location.pathname.startsWith('/chat/')) return null;

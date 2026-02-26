@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Lock } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -13,6 +14,7 @@ export default function ResetPassword() {
   const [isRecovery, setIsRecovery] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -27,9 +29,9 @@ export default function ResetPassword() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
-      toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: 'Mot de passe mis à jour !' });
+      toast({ title: t('reset.updatedSuccess') });
       navigate('/');
     }
   };
@@ -37,7 +39,7 @@ export default function ResetPassword() {
   if (!isRecovery) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-muted-foreground">Lien invalide ou expiré.</p>
+        <p className="text-muted-foreground">{t('reset.invalidLink')}</p>
       </div>
     );
   }
@@ -45,17 +47,26 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-background">
       <div className="w-full max-w-sm">
-        <h1 className="text-xl font-bold text-foreground mb-6 text-center">Nouveau mot de passe</h1>
+        <h1 className="text-xl font-bold text-foreground mb-6 text-center">{t('reset.title')}</h1>
         <form onSubmit={handleReset} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="new-password">Nouveau mot de passe</Label>
+            <Label htmlFor="new-password">{t('reset.newPassword')}</Label>
             <div className="relative">
               <Lock size={16} className="absolute left-3 top-3 text-muted-foreground" />
-              <Input id="new-password" type="password" placeholder="Min. 6 caractères" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-9" minLength={6} required />
+              <Input
+                id="new-password"
+                type="password"
+                placeholder={t('auth.passwordMin')}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-9"
+                minLength={6}
+                required
+              />
             </div>
           </div>
           <Button type="submit" className="w-full bg-gradient-golf" disabled={loading}>
-            {loading ? 'Mise à jour...' : 'Mettre à jour'}
+            {loading ? t('reset.updateLoading') : t('reset.update')}
           </Button>
         </form>
       </div>
