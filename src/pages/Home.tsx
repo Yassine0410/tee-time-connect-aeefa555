@@ -62,12 +62,7 @@ export default function Home() {
           <p className="text-3xl font-bold">{rounds.filter(r => r.status === 'open').length}</p>
           <p className="text-sm opacity-90">{t('home.openRounds')}</p>
         </div>
-        <div className="flex-shrink-0 golf-card min-w-[140px]">
-          <p className="text-3xl font-bold text-foreground">{rounds.length}</p>
-          <p className="text-sm text-muted-foreground">{t('home.thisWeek')}</p>
-        </div>
       </div>
-
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="section-header mb-0">{t('home.upcomingRounds')}</h2>
