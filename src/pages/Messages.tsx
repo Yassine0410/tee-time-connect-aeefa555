@@ -12,6 +12,7 @@ export default function Messages() {
   const { data: conversations, isLoading } = useConversations();
   const { data: profile } = useProfile();
   const { t, dateLocale } = useLanguage();
+  const visibleConversations = (conversations || []).filter((conv) => !!conv.last_message);
 
   return (
     <div className="screen-content">
@@ -21,7 +22,7 @@ export default function Messages() {
         <div className="flex justify-center py-12">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
-      ) : !conversations || conversations.length === 0 ? (
+      ) : visibleConversations.length === 0 ? (
         <div className="text-center py-12">
           <MessageCircle size={48} className="mx-auto text-muted-foreground mb-3" />
           <p className="text-muted-foreground">{t('messages.emptyTitle')}</p>
@@ -29,7 +30,7 @@ export default function Messages() {
         </div>
       ) : (
         <div className="space-y-2">
-          {conversations.map((conv) => {
+          {visibleConversations.map((conv) => {
             const otherParticipants = conv.participants.filter((p) => p.id !== profile?.id);
             const displayName =
               conv.type === 'round'
@@ -59,7 +60,7 @@ export default function Messages() {
                     <p className="font-semibold text-foreground truncate">{displayName}</p>
                     {timeAgo && <span className="text-xs text-muted-foreground shrink-0 ml-2">{timeAgo}</span>}
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">{conv.last_message?.content || t('messages.noMessagesYet')}</p>
+                  <p className="text-sm text-muted-foreground truncate">{conv.last_message!.content}</p>
                 </div>
               </button>
             );

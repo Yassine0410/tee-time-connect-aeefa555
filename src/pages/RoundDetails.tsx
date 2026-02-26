@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Users, Flag, Share2, MessageCircle, UserPlus, UserMinus, MessagesSquare, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Flag, Share2, UserPlus, UserMinus, MessagesSquare, AlertTriangle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
 import { useRound, useProfile, useJoinRound, useLeaveRound } from '@/hooks/useGolfData';
-import { useGetOrCreateDM, useRoundConversation } from '@/hooks/useChat';
+import { useRoundConversation } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -27,7 +27,6 @@ export default function RoundDetails() {
   const { data: profile } = useProfile();
   const joinRound = useJoinRound();
   const leaveRound = useLeaveRound();
-  const getOrCreateDM = useGetOrCreateDM();
   const { data: roundConversationId } = useRoundConversation(id);
   const { t, dateLocale, formatLabel, handicapLabel } = useLanguage();
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
@@ -100,16 +99,6 @@ export default function RoundDetails() {
 
   const handleShare = () => {
     toast.success(t('roundDetails.linkCopied'));
-  };
-
-  const handleMessageOrganizer = async () => {
-    if (!round || isOrganizer) return;
-    try {
-      const convId = await getOrCreateDM.mutateAsync(round.organizer.id);
-      navigate(`/chat/${convId}`);
-    } catch (err: any) {
-      toast.error(t('roundDetails.failedOpenChat'), { description: err.message });
-    }
   };
 
   const handleRoundChat = () => {
@@ -286,13 +275,6 @@ export default function RoundDetails() {
           >
             <UserMinus size={20} className="inline mr-2" />
             {t('roundDetails.leaveRound')}
-          </button>
-        )}
-
-        {!isOrganizer && (
-          <button onClick={handleMessageOrganizer} disabled={getOrCreateDM.isPending} className="btn-golf-outline w-full">
-            <MessageCircle size={18} className="inline mr-2" />
-            {t('roundDetails.messageOrganizer')}
           </button>
         )}
 

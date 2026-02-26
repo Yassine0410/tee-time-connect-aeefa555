@@ -25,71 +25,6 @@ export interface ConversationWithDetails extends Conversation {
   round_name?: string;
 }
 
-// Get or create a DM conversation with another user
-export function useGetOrCreateDM() {
-  const { data: profile } = useProfile();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (otherProfileId: string): Promise<string> => {
-      if (!profile) throw new Error('Not authenticated');
-
-      // Find existing DM between these two users
-      const { data: myConvs } = await supabase
-        .from('conversation_participants')
-        .select('conversation_id')
-        .eq('profile_id', profile.id);
-
-      const { data: theirConvs } = await supabase
-        .from('conversation_participants')
-        .select('conversation_id')
-        .eq('profile_id', otherProfileId);
-
-      if (myConvs && theirConvs) {
-        const myIds = new Set(myConvs.map(c => c.conversation_id));
-        const commonIds = theirConvs
-          .filter(c => myIds.has(c.conversation_id))
-          .map(c => c.conversation_id);
-
-        if (commonIds.length > 0) {
-          // Check if any of these are DMs
-          const { data: dmConvs } = await supabase
-            .from('conversations')
-            .select('id')
-            .in('id', commonIds)
-            .eq('type', 'dm');
-
-          if (dmConvs && dmConvs.length > 0) {
-            return dmConvs[0].id;
-          }
-        }
-      }
-
-      // Create new DM conversation
-      const { data: conv, error } = await supabase
-        .from('conversations')
-        .insert({ type: 'dm' })
-        .select()
-        .single();
-      if (error) throw error;
-
-      // Add both participants
-      const { error: pError } = await supabase
-        .from('conversation_participants')
-        .insert([
-          { conversation_id: conv.id, profile_id: profile.id },
-          { conversation_id: conv.id, profile_id: otherProfileId },
-        ]);
-      if (pError) throw pError;
-
-      return conv.id;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
-    },
-  });
-}
-
 // List all conversations for the current user
 export function useConversations() {
   const { data: profile } = useProfile();
@@ -140,6 +75,11 @@ export function useConversations() {
           .limit(1)
           .maybeSingle();
 
+        // Do not include empty conversations in the list.
+        if (!lastMsg) {
+          continue;
+        }
+
         // Get round name if it's a round chat
         let round_name: string | undefined;
         if (conv.type === 'round' && conv.round_id) {
@@ -155,7 +95,7 @@ export function useConversations() {
           ...conv,
           type: conv.type as 'dm' | 'round',
           participants,
-          last_message: lastMsg || undefined,
+          last_message: lastMsg,
           round_name,
         });
       }

@@ -13,12 +13,18 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const gameFormats = ['Stroke Play', 'Stableford', 'Match Play', 'Best Ball', 'Scramble', 'Skins'];
 const handicapRanges = ['All Levels', '0-10', '10-20', '20-30', '30+'];
-const timeSlots = [
-  '06:00', '06:30', '07:00', '07:30', '08:00', '08:30',
-  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-  '15:00', '15:30', '16:00', '16:30', '17:00',
-];
+
+function generateTimeSlots(startHour: number, endHour: number, intervalMinutes: number) {
+  const slots: string[] = [];
+  for (let totalMinutes = startHour * 60; totalMinutes <= endHour * 60; totalMinutes += intervalMinutes) {
+    const hour = Math.floor(totalMinutes / 60);
+    const minute = totalMinutes % 60;
+    slots.push(`${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
+  }
+  return slots;
+}
+
+const timeSlots = generateTimeSlots(6, 20, 15);
 
 export default function CreateRound() {
   const navigate = useNavigate();
