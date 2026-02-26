@@ -115,6 +115,8 @@ export type Database = {
           format: string
           handicap_range: string
           id: string
+          max_handicap: number
+          min_handicap: number
           organizer_id: string
           players_needed: number
           status: string
@@ -129,6 +131,8 @@ export type Database = {
           format?: string
           handicap_range?: string
           id?: string
+          max_handicap?: number
+          min_handicap?: number
           organizer_id: string
           players_needed?: number
           status?: string
@@ -143,6 +147,8 @@ export type Database = {
           format?: string
           handicap_range?: string
           id?: string
+          max_handicap?: number
+          min_handicap?: number
           organizer_id?: string
           players_needed?: number
           status?: string

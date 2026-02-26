@@ -4,15 +4,21 @@ import { Calendar as CalendarIcon, Clock, MapPin, Flag, Info } from 'lucide-reac
 import { format } from 'date-fns';
 import { Header } from '@/components/Header';
 import { FormField, SelectCards } from '@/components/FormField';
+import { HandicapRangeSlider } from '@/components/HandicapRangeSlider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useCourses, useCreateRound } from '@/hooks/useGolfData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  HANDICAP_MAX,
+  HANDICAP_MIN,
+  normalizeHandicapRange,
+  toLegacyHandicapRange,
+} from '@/lib/handicapRange';
 
 const gameFormats = ['Stroke Play', 'Stableford', 'Match Play', 'Best Ball', 'Scramble', 'Skins'];
-const handicapRanges = ['All Levels', '0-10', '10-20', '20-30', '30+'];
 
 function generateTimeSlots(startHour: number, endHour: number, intervalMinutes: number) {
   const slots: string[] = [];
@@ -30,14 +36,15 @@ export default function CreateRound() {
   const navigate = useNavigate();
   const { data: courses = [] } = useCourses();
   const createRound = useCreateRound();
-  const { t, dateLocale, formatLabel, handicapLabel, language } = useLanguage();
+  const { t, dateLocale, formatLabel, handicapRangeText, language } = useLanguage();
 
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState('');
   const [courseId, setCourseId] = useState('');
   const [gameFormat, setGameFormat] = useState('');
   const [playersNeeded, setPlayersNeeded] = useState('4');
-  const [handicapRange, setHandicapRange] = useState('');
+  const [minHandicap, setMinHandicap] = useState(HANDICAP_MIN);
+  const [maxHandicap, setMaxHandicap] = useState(HANDICAP_MAX);
   const [description, setDescription] = useState('');
 
   const selectedCourse = courses.find((c) => c.id === courseId);
@@ -45,10 +52,16 @@ export default function CreateRound() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!date || !time || !courseId || !gameFormat || !handicapRange) {
+    if (!date || !time || !courseId || !gameFormat) {
       toast.error(t('createRound.requiredFields'));
       return;
     }
+
+    if (minHandicap > maxHandicap) {
+      toast.error(t('createRound.invalidHandicapRange'));
+      return;
+    }
+    const normalizedRange = normalizeHandicapRange(minHandicap, maxHandicap);
 
     try {
       await createRound.mutateAsync({
@@ -57,7 +70,9 @@ export default function CreateRound() {
         time,
         format: gameFormat,
         players_needed: parseInt(playersNeeded, 10),
-        handicap_range: handicapRange,
+        min_handicap: normalizedRange.min,
+        max_handicap: normalizedRange.max,
+        handicap_range: toLegacyHandicapRange(normalizedRange.min, normalizedRange.max),
         description: description || undefined,
       });
       toast.success(t('createRound.successTitle'), {
@@ -161,11 +176,14 @@ export default function CreateRound() {
         </FormField>
 
         <FormField label={t('createRound.playerLevel')} required>
-          <SelectCards
-            options={handicapRanges.map((value) => ({ value, label: handicapLabel(value) }))}
-            value={handicapRange}
-            onChange={setHandicapRange}
-            columns={3}
+          <HandicapRangeSlider
+            min={minHandicap}
+            max={maxHandicap}
+            onChange={({ min, max }) => {
+              setMinHandicap(min);
+              setMaxHandicap(max);
+            }}
+            allLevelsLabel={handicapRangeText(HANDICAP_MIN, HANDICAP_MAX)}
           />
         </FormField>
 

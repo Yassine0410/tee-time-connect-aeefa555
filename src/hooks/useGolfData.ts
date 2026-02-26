@@ -1,10 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  normalizeHandicapRange,
+  resolveHandicapRangeFromRow,
+  toLegacyHandicapRange,
+} from '@/lib/handicapRange';
 
 function isMissingParticipationStatusColumnError(error: any) {
   const message = String(error?.message || '').toLowerCase();
   return message.includes('participation_status') && message.includes('round_players');
+}
+
+function isMissingHandicapRangeColumnsError(error: any) {
+  const message = String(error?.message || '').toLowerCase();
+  const missingMin = message.includes('min_handicap');
+  const missingMax = message.includes('max_handicap');
+  return (missingMin || missingMax) && message.includes('golf_rounds');
 }
 
 async function insertRoundPlayerWithCompatibility(roundId: string, profileId: string) {
@@ -61,12 +73,35 @@ export interface RoundWithDetails {
   format: string;
   players_needed: number;
   handicap_range: string;
+  min_handicap: number;
+  max_handicap: number;
   description: string | null;
   status: string;
   created_at: string;
   organizer: ProfileRow;
   course: CourseRow;
   players: ProfileRow[];
+}
+
+function mapRoundWithDetails(r: any, players: ProfileRow[]): RoundWithDetails {
+  const range = resolveHandicapRangeFromRow(r);
+
+  return {
+    id: r.id,
+    date: r.date,
+    time: r.time,
+    format: r.format,
+    players_needed: r.players_needed,
+    handicap_range: r.handicap_range || toLegacyHandicapRange(range.min, range.max),
+    min_handicap: range.min,
+    max_handicap: range.max,
+    description: r.description,
+    status: r.status,
+    created_at: r.created_at,
+    organizer: r.organizer,
+    course: r.course,
+    players,
+  };
 }
 
 // Fetch current user's profile
@@ -158,20 +193,7 @@ export function useRounds() {
         });
       }
 
-      return rounds.map((r: any) => ({
-        id: r.id,
-        date: r.date,
-        time: r.time,
-        format: r.format,
-        players_needed: r.players_needed,
-        handicap_range: r.handicap_range,
-        description: r.description,
-        status: r.status,
-        created_at: r.created_at,
-        organizer: r.organizer,
-        course: r.course,
-        players: playersMap[r.id] || [],
-      })) as RoundWithDetails[];
+      return rounds.map((r: any) => mapRoundWithDetails(r, playersMap[r.id] || []));
     },
   });
 }
@@ -200,20 +222,7 @@ export function useRound(roundId: string | undefined) {
         .eq('round_id', roundId);
       if (rpError) throw rpError;
 
-      return {
-        id: round.id,
-        date: round.date,
-        time: round.time,
-        format: round.format,
-        players_needed: round.players_needed,
-        handicap_range: round.handicap_range,
-        description: round.description,
-        status: round.status,
-        created_at: round.created_at,
-        organizer: (round as any).organizer,
-        course: (round as any).course,
-        players: roundPlayers?.map((rp: any) => rp.profile) || [],
-      } as RoundWithDetails;
+      return mapRoundWithDetails(round, roundPlayers?.map((rp: any) => rp.profile) || []);
     },
     enabled: !!roundId,
   });
@@ -270,20 +279,7 @@ export function useMyRounds() {
       });
 
       const today = new Date().toISOString().split('T')[0];
-      const mapped = rounds?.map((r: any) => ({
-        id: r.id,
-        date: r.date,
-        time: r.time,
-        format: r.format,
-        players_needed: r.players_needed,
-        handicap_range: r.handicap_range,
-        description: r.description,
-        status: r.status,
-        created_at: r.created_at,
-        organizer: r.organizer,
-        course: r.course,
-        players: playersMap[r.id] || [],
-      })) as RoundWithDetails[] || [];
+      const mapped = (rounds?.map((r: any) => mapRoundWithDetails(r, playersMap[r.id] || [])) || []) as RoundWithDetails[];
 
       return {
         upcoming: mapped.filter(r => r.date >= today && r.status !== 'completed'),
@@ -306,13 +302,18 @@ export function useCreateRound() {
       time: string;
       format: string;
       players_needed: number;
-      handicap_range: string;
+      min_handicap: number;
+      max_handicap: number;
+      handicap_range?: string;
       description?: string;
     }) => {
       if (!profile) throw new Error('Profile not found');
+
+      const normalizedRange = normalizeHandicapRange(input.min_handicap, input.max_handicap);
+      const handicapRangeText = input.handicap_range || toLegacyHandicapRange(normalizedRange.min, normalizedRange.max);
       
       // Create the round
-      const { data: round, error } = await supabase
+      const insertWithRangeColumns = await supabase
         .from('golf_rounds')
         .insert({
           organizer_id: profile.id,
@@ -321,12 +322,40 @@ export function useCreateRound() {
           time: input.time,
           format: input.format,
           players_needed: input.players_needed,
-          handicap_range: input.handicap_range,
+          handicap_range: handicapRangeText,
+          min_handicap: normalizedRange.min,
+          max_handicap: normalizedRange.max,
           description: input.description || null,
         })
         .select()
         .single();
+
+      let round = insertWithRangeColumns.data;
+      let error = insertWithRangeColumns.error;
+
+      // Backward-compatible fallback for environments where min/max columns are not migrated yet.
+      if (error && isMissingHandicapRangeColumnsError(error)) {
+        const fallbackInsert = await supabase
+          .from('golf_rounds')
+          .insert({
+            organizer_id: profile.id,
+            course_id: input.course_id,
+            date: input.date,
+            time: input.time,
+            format: input.format,
+            players_needed: input.players_needed,
+            handicap_range: handicapRangeText,
+            description: input.description || null,
+          })
+          .select()
+          .single();
+
+        round = fallbackInsert.data;
+        error = fallbackInsert.error;
+      }
+
       if (error) throw error;
+      if (!round) throw new Error('Round creation failed');
 
       // Auto-join the organizer as a player
       await insertRoundPlayerWithCompatibility(round.id, profile.id);

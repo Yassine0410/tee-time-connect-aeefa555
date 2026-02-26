@@ -28,7 +28,7 @@ export default function RoundDetails() {
   const joinRound = useJoinRound();
   const leaveRound = useLeaveRound();
   const { data: roundConversationId } = useRoundConversation(id);
-  const { t, dateLocale, formatLabel, handicapLabel } = useLanguage();
+  const { t, dateLocale, formatLabel, handicapRangeText } = useLanguage();
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
 
   if (isLoading) {
@@ -169,7 +169,7 @@ export default function RoundDetails() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t('roundDetails.level')}</p>
-              <p className="font-medium text-foreground text-sm">HCP {handicapLabel(round.handicap_range)}</p>
+              <p className="font-medium text-foreground text-sm">HCP {handicapRangeText(round.min_handicap, round.max_handicap)}</p>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import {
   availableLanguages,
   dateLocales,
   getHandicapRangeLabel,
+  getHandicapRangeText,
   getRoundFormatLabel,
   getRoundStatusLabel,
   type Language,
@@ -17,6 +18,7 @@ interface LanguageContextValue {
   t: (key: Parameters<typeof translate>[1], params?: TranslateParams) => string;
   formatLabel: (format: string) => string;
   handicapLabel: (range: string) => string;
+  handicapRangeText: (min: number, max: number) => string;
   statusLabel: (status: string) => string;
 }
 
@@ -53,6 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       t: (key, params) => translate(language, key, params),
       formatLabel: (format) => getRoundFormatLabel(format, language),
       handicapLabel: (range) => getHandicapRangeLabel(range, language),
+      handicapRangeText: (min, max) => getHandicapRangeText(min, max, language),
       statusLabel: (status) => getRoundStatusLabel(status, language),
     };
   }, [language]);

@@ -12,7 +12,7 @@ interface RoundCardProps {
 
 export function RoundCard({ round }: RoundCardProps) {
   const navigate = useNavigate();
-  const { t, dateLocale, formatLabel, handicapLabel } = useLanguage();
+  const { t, dateLocale, formatLabel, handicapRangeText } = useLanguage();
   const spotsLeft = round.players_needed - round.players.length;
   const isFull = spotsLeft <= 0;
   
@@ -71,7 +71,7 @@ export function RoundCard({ round }: RoundCardProps) {
           </div>
         </div>
         <div className="golf-badge-muted">
-          HCP {handicapLabel(round.handicap_range)}
+          HCP {handicapRangeText(round.min_handicap, round.max_handicap)}
         </div>
       </div>
 

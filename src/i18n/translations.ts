@@ -59,6 +59,11 @@ const enTranslations = {
   "createRound.gameFormat": "Game Format",
   "createRound.players": "Number of Players",
   "createRound.playerLevel": "Player Level",
+  "createRound.handicapAccepted": "Accepted handicap",
+  "createRound.lowHandicap": "Low handicap",
+  "createRound.intermediateHandicap": "Intermediate",
+  "createRound.highHandicap": "High handicap",
+  "createRound.invalidHandicapRange": "Invalid handicap range",
   "createRound.descriptionOptional": "Description (Optional)",
   "createRound.descriptionPlaceholder": "Add any details about your round...",
   "createRound.infoNote":
@@ -277,6 +282,11 @@ const frTranslations: Record<TranslationKey, string> = {
   "createRound.gameFormat": "Format de jeu",
   "createRound.players": "Nombre de joueurs",
   "createRound.playerLevel": "Niveau des joueurs",
+  "createRound.handicapAccepted": "Handicap accepte",
+  "createRound.lowHandicap": "Bas handicap",
+  "createRound.intermediateHandicap": "Intermediaire",
+  "createRound.highHandicap": "Haut handicap",
+  "createRound.invalidHandicapRange": "Plage de handicap invalide",
   "createRound.descriptionOptional": "Description (optionnel)",
   "createRound.descriptionPlaceholder": "Ajoute des details sur ta partie...",
   "createRound.infoNote":
@@ -486,6 +496,18 @@ export function getRoundFormatLabel(format: string, language: Language) {
 
 export function getHandicapRangeLabel(range: string, language: Language) {
   return handicapRangeLabels[range]?.[language] ?? range;
+}
+
+export function getHandicapRangeText(min: number, max: number, language: Language) {
+  const clampedMin = Math.max(0, Math.min(36, Math.round(min)));
+  const clampedMax = Math.max(0, Math.min(36, Math.round(max)));
+  const normalizedMin = Math.min(clampedMin, clampedMax);
+  const normalizedMax = Math.max(clampedMin, clampedMax);
+
+  if (normalizedMin === 0 && normalizedMax === 36) {
+    return handicapRangeLabels["All Levels"][language];
+  }
+  return `${normalizedMin}-${normalizedMax}`;
 }
 
 export function getRoundStatusLabel(status: string, language: Language) {

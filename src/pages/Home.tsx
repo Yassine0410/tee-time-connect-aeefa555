@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Search, Filter, Circle } from 'lucide-react';
 import { RoundCard } from '@/components/RoundCard';
-import { useRounds } from '@/hooks/useGolfData';
+import { useProfile, useRounds } from '@/hooks/useGolfData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { isHandicapInRange } from '@/lib/handicapRange';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showOpenOnly, setShowOpenOnly] = useState(false);
   const { data: rounds = [], isLoading } = useRounds();
+  const { data: profile } = useProfile();
   const { t, formatLabel } = useLanguage();
 
   const openCount = rounds.filter(r => r.status === 'open').length;
@@ -22,8 +24,10 @@ export default function Home() {
       localizedFormat.includes(normalizedQuery);
     
     const matchesFilter = !showOpenOnly || round.status === 'open';
-    
-    return matchesSearch && matchesFilter;
+    const hasComparableHandicap = typeof profile?.handicap === 'number' && profile.handicap >= 0 && profile.handicap <= 36;
+    const matchesHandicap = !hasComparableHandicap || isHandicapInRange(profile.handicap, round.min_handicap, round.max_handicap);
+
+    return matchesSearch && matchesFilter && matchesHandicap;
   });
 
   return (
