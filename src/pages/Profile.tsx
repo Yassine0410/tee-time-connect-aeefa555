@@ -45,7 +45,7 @@ export default function Profile() {
 
   return (
     <div className="screen-content">
-      <Header title={t('profile.title')} action={<LanguageToggle compact />} />
+      <Header title={t('profile.title')} />
 
       <div className="golf-card mb-6 animate-fade-in">
         <div className="flex items-center gap-4 mb-4">

@@ -14,7 +14,7 @@ const enTranslations = {
   "language.french": "French",
 
   "nav.home": "Home",
-  "nav.rounds": "Rounds",
+  "nav.rounds": "My Rounds",
   "nav.create": "Create",
   "nav.chat": "Chat",
   "nav.profile": "Profile",
@@ -236,7 +236,7 @@ const frTranslations: Record<TranslationKey, string> = {
   "language.french": "Francais",
 
   "nav.home": "Accueil",
-  "nav.rounds": "Parties",
+  "nav.rounds": "Mes parties",
   "nav.create": "Creer",
   "nav.chat": "Messages",
   "nav.profile": "Profil",
