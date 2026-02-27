@@ -6,6 +6,7 @@ const enTranslations = {
   "common.error": "Error",
   "common.user": "User",
   "common.unknown": "Unknown",
+  "common.and": "and",
   "common.memberSince": "Member since {year}",
   "common.notSet": "Not set",
 
@@ -170,6 +171,9 @@ const enTranslations = {
   "chat.roundChatDefault": "Round Chat",
   "chat.empty": "No messages yet. Say hello!",
   "chat.inputPlaceholder": "Type a message...",
+  "chat.typingSingle": "{name} is typing…",
+  "chat.typingMultiple": "{names} are typing…",
+  "chat.typingMany": "{names} and {count} others are typing…",
 
   "auth.loginTagline": "Sign in to join your rounds",
   "auth.signupTagline": "Create your golfer account",
@@ -228,6 +232,7 @@ const frTranslations: Record<TranslationKey, string> = {
   "common.error": "Erreur",
   "common.user": "Utilisateur",
   "common.unknown": "Inconnu",
+  "common.and": "et",
   "common.memberSince": "Membre depuis {year}",
   "common.notSet": "Non renseigné",
 
@@ -395,6 +400,9 @@ const frTranslations: Record<TranslationKey, string> = {
   "chat.roundChatDefault": "Discussion de partie",
   "chat.empty": "Pas encore de messages. Dites bonjour !",
   "chat.inputPlaceholder": "Écrivez un message...",
+  "chat.typingSingle": "{name} est en train d’écrire…",
+  "chat.typingMultiple": "{names} sont en train d’écrire…",
+  "chat.typingMany": "{names} et {count} autres sont en train d’écrire…",
 
   "auth.loginTagline": "Connectez-vous pour rejoindre vos parties",
   "auth.signupTagline": "Créez votre compte",

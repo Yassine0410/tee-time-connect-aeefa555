@@ -23,6 +23,8 @@ export interface ConversationWithDetails extends Conversation {
   participants: ProfileRow[];
   last_message?: Message;
   round_name?: string;
+  round_date?: string;
+  round_time?: string;
 }
 
 // List all conversations for the current user
@@ -82,13 +84,17 @@ export function useConversations() {
 
         // Get round name if it's a round chat
         let round_name: string | undefined;
+        let round_date: string | undefined;
+        let round_time: string | undefined;
         if (conv.type === 'round' && conv.round_id) {
           const { data: round } = await supabase
             .from('golf_rounds')
-            .select('course:golf_courses!course_id(name)')
+            .select('date, time, course:golf_courses!course_id(name)')
             .eq('id', conv.round_id)
             .maybeSingle();
           round_name = (round as any)?.course?.name;
+          round_date = (round as any)?.date;
+          round_time = (round as any)?.time;
         }
 
         results.push({
@@ -97,6 +103,8 @@ export function useConversations() {
           participants,
           last_message: lastMsg,
           round_name,
+          round_date,
+          round_time,
         });
       }
 

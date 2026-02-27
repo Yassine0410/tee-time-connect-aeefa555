@@ -4,8 +4,15 @@ import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
 import { useConversations } from '@/hooks/useChat';
 import { useProfile } from '@/hooks/useGolfData';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, parseISO } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+function shortenCourseName(name: string) {
+  return name
+    .replace(/\s+(golf\s+links|golf\s+club|golf\s+course)\s*$/i, '')
+    .replace(/\s+\(.*\)\s*$/i, '')
+    .trim();
+}
 
 export default function Messages() {
   const navigate = useNavigate();
@@ -32,15 +39,22 @@ export default function Messages() {
         <div className="space-y-2">
           {visibleConversations.map((conv) => {
             const otherParticipants = conv.participants.filter((p) => p.id !== profile?.id);
-            const displayName =
-              conv.type === 'round'
-                ? `${t('messages.roundPrefix')}: ${conv.round_name || t('messages.roundChatDefault')}`
-                : otherParticipants[0]?.name || t('common.unknown');
+            const isRound = conv.type === 'round';
+            const displayName = isRound
+              ? shortenCourseName(conv.round_name || t('messages.roundChatDefault'))
+              : otherParticipants[0]?.name || t('common.unknown');
             const avatarName = conv.type === 'round' ? conv.round_name || t('messages.roundChatDefault') : otherParticipants[0]?.name || t('common.user');
             const avatarUrl = conv.type === 'dm' ? otherParticipants[0]?.avatar_url || undefined : undefined;
             const timeAgo = conv.last_message
               ? formatDistanceToNow(new Date(conv.last_message.created_at), { addSuffix: true, locale: dateLocale })
               : '';
+
+            const roundDateText =
+              isRound && conv.round_date
+                ? format(parseISO(conv.round_date), 'EEEE d MMM', { locale: dateLocale })
+                : '';
+            const normalizedRoundDateText = roundDateText ? roundDateText.charAt(0).toUpperCase() + roundDateText.slice(1) : '';
+            const roundMeta = isRound ? [normalizedRoundDateText, conv.round_time].filter(Boolean).join(' · ') : '';
 
             return (
               <button
@@ -60,7 +74,14 @@ export default function Messages() {
                     <p className="font-semibold text-foreground truncate">{displayName}</p>
                     {timeAgo && <span className="text-xs text-muted-foreground shrink-0 ml-2">{timeAgo}</span>}
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">{conv.last_message!.content}</p>
+                  {isRound && roundMeta ? (
+                    <>
+                      <p className="text-xs text-muted-foreground truncate">{roundMeta}</p>
+                      <p className="text-sm text-muted-foreground truncate">{conv.last_message!.content}</p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground truncate">{conv.last_message!.content}</p>
+                  )}
                 </div>
               </button>
             );
