@@ -285,12 +285,7 @@ export default function RoundDetails() {
           </button>
         )}
 
-        {hasJoined && round.status === 'completed' && (
-          <button onClick={() => navigate(`/round/${round.id}/reviews`)} className="btn-golf-outline w-full">
-            <Flag size={18} className="inline mr-2" />
-            {t('roundDetails.leaveReview')}
-          </button>
-        )}
+
       </div>
 
       {/* Leave confirmation dialog */}

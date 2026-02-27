@@ -1,4 +1,4 @@
-import { Settings, Trophy, Calendar, ChevronRight, Star } from 'lucide-react';
+import { Settings, Calendar, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { PlayerAvatar } from '@/components/PlayerAvatar';
@@ -6,14 +6,12 @@ import { useProfile } from '@/hooks/useGolfData';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
-import { useProfileReputation } from '@/hooks/useReputation';
 
 export default function Profile() {
   const { data: profile, isLoading } = useProfile();
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { data: reputation, isLoading: reputationLoading } = useProfileReputation(profile?.id);
 
   if (isLoading || !profile) {
     return (
@@ -28,20 +26,8 @@ export default function Profile() {
 
   const menuItems = [
     { label: t('profile.editProfile'), path: '/profile/edit', icon: Settings },
-    { label: t('profile.leaderboard'), path: '/leaderboard', icon: Trophy },
     { label: t('profile.myRounds'), path: '/rounds', icon: Calendar },
-    { label: t('profile.reviews'), path: '/reviews', icon: Star },
   ];
-
-  const roundsPlayed = reputation?.roundsPlayed ?? 0;
-  const reliabilityValue =
-    reputation?.reliabilityPercent !== null && reputation?.reliabilityPercent !== undefined
-      ? `${reputation.reliabilityPercent}%`
-      : "--";
-  const ratingValue =
-    reputation?.averageRating !== null && reputation?.averageRating !== undefined
-      ? `${reputation.averageRating.toFixed(1)} ★`
-      : t('profile.kpi.noRating');
 
   return (
     <div className="screen-content">
@@ -67,33 +53,6 @@ export default function Profile() {
           </div>
         </div>
         {profile.bio && <p className="text-sm text-muted-foreground border-t border-border pt-4">{profile.bio}</p>}
-
-        <div className="mt-4 pt-4 border-t border-border">
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[11px] text-muted-foreground">{t('profile.kpi.roundsPlayed')}</p>
-              <p className="text-lg font-bold text-foreground">{reputationLoading ? "..." : roundsPlayed}</p>
-            </div>
-            <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[11px] text-muted-foreground">{t('profile.kpi.reliability')}</p>
-              <p className="text-lg font-bold text-foreground">{reputationLoading ? "..." : reliabilityValue}</p>
-            </div>
-            <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[11px] text-muted-foreground">{t('profile.kpi.rating')}</p>
-              <p className="text-lg font-bold text-foreground">{reputationLoading ? "..." : ratingValue}</p>
-            </div>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-2">
-            {reputationLoading
-              ? t('profile.kpi.loadingMeta')
-              : reputation && reputation.reliabilitySampleSize > 0
-              ? t('profile.kpi.meta', {
-                  count: reputation.reviewsCount,
-                  sample: reputation.reliabilitySampleSize,
-                })
-              : t('profile.kpi.metaNoAttendance', { count: reputation?.reviewsCount ?? 0 })}
-          </p>
-        </div>
       </div>
 
       <div className="golf-card p-0 overflow-hidden animate-fade-in">
