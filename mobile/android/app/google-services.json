@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "474830984316",
+    "project_id": "live-swing-65c27",
+    "storage_bucket": "live-swing-65c27.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474830984316:android:36d7204b292dacb261a5f9",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHi9Ydtc1WAkYnbwk3kJMqRk974V40CAg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
