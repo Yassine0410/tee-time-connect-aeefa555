@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/auth/presentation/auth_page.dart';
 import 'package:mobile/features/rounds/presentation/home_page.dart';
+import 'package:mobile/features/rounds/presentation/create_round_page.dart';
+
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/auth',
@@ -21,6 +23,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomePage(),
+    ),
+    GoRoute(
+      path: '/rounds/create',
+      builder: (context, state) => const CreateRoundPage(),
     ),
   ],
 );
